@@ -155,6 +155,12 @@
                     </svg>
                     <span class="notification-dot"></span>
                 </button>
+                <button class="primary-btn simulate-btn" id="simulate-sensor-btn" style="padding: 8px 16px; font-size: 0.85rem; height: 38px; gap: 8px; margin-right: 12px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                    </svg>
+                    Simulate Sensor
+                </button>
                 <div class="user-avatar" id="user-avatar">
                     <span>FK</span>
                 </div>
@@ -518,40 +524,89 @@
 
             <!-- Dashboard Main Grid -->
             <div class="dashboard-grid">
-                <!-- Live Vibration Feed -->
+                
+                <!-- Live Vibration Radar (MAIN) -->
                 <div class="card vibration-card" id="vibration-card">
-                    <div class="card-header">
-                        <h2>Live Vibration Feed</h2>
+                    <div class="card-header" style="padding-bottom: 5px;">
+                        <div style="display:flex; flex-direction:column;">
+                            <h2 style="color:var(--accent-green); display:flex; align-items:center; gap:8px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px; height:18px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                                Vibration Intelligence Radar
+                            </h2>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:3px;">Real-time piezoelectric sensor telemetry across all zones</p>
+                        </div>
                         <div class="card-actions">
-                            <span class="live-indicator">
-                                <span class="live-dot"></span> LIVE
-                            </span>
                             <select id="vibration-zone-select" class="mini-select">
-                                <option value="all">All Zones</option>
-                                <option value="zone-a">Zone A</option>
-                                <option value="zone-b">Zone B</option>
-                                <option value="zone-c">Zone C</option>
-                                <option value="zone-d">Zone D</option>
+                                <option value="all">Global Scan</option>
                             </select>
+                            <span class="live-indicator">
+                                <span class="live-dot"></span> BROADCASTING
+                            </span>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <canvas id="vibration-canvas" width="800" height="250"></canvas>
+                    <div class="card-body" style="padding-top: 10px;">
+                        <div style="position:relative; width:100%; border: 1px solid rgba(52, 211, 153, 0.1); border-radius: 12px; overflow:hidden; background:#000;">
+                            <canvas id="vibration-canvas" width="800" height="300"></canvas>
+                            <!-- Visual Overlay for a "Radar" look -->
+                            <div style="position:absolute; inset:0; pointer-events:none; background: repeating-linear-gradient(rgba(52,211,153,0.03) 0, rgba(52,211,153,0.03) 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, rgba(52,211,153,0.03) 0, rgba(52,211,153,0.03) 1px, transparent 1px, transparent 40px); background-size: 40px 40px;"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Recent Detections -->
+                <!-- GSM Broadcast Command Hub (SIDEBAR) -->
+                <div class="card gsm-status-card" id="gsm-hardware-card" style="border-right: 2px solid var(--accent-cyan);">
+                    <div class="card-header" style="flex-direction:column; align-items:flex-start; gap:8px;">
+                        <div style="display:flex; align-items:center; gap:8px; width:100%;">
+                            <div style="background: var(--accent-cyan); color: #000; padding: 6px; border-radius: 8px; display:flex;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px; height:16px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.11-2.11a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                            </div>
+                            <h2 style="font-size: 0.9rem; font-weight:700; flex:1;">GSM Broadcast Hub</h2>
+                            <span class="status-badge healthy" id="gsm-conn-status" style="font-size: 0.65rem; padding: 2px 8px;">Polling...</span>
+                        </div>
+                        
+                        <!-- Hardware Telemetry Sub-section -->
+                        <div style="width:100%; margin-top:5px; padding:10px; background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.1); border-radius:10px; display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                            <div>
+                                <div style="font-size:0.6rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Hardware</div>
+                                <div id="gsm-type" style="font-size:0.7rem; color:var(--accent-cyan); font-weight:700;">--</div>
+                            </div>
+                            <div>
+                                <div style="font-size:0.6rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Signal</div>
+                                <div id="gsm-signal" style="font-size:0.7rem; color:var(--accent-cyan); font-weight:700;">--</div>
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <div style="font-size:0.6rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Network Carrier</div>
+                                <div id="gsm-carrier" style="font-size:0.7rem; color:var(--text-primary); font-weight:500;">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" id="gsm-sms-list" style="padding: 0; overflow-y: auto; flex:1; max-height: 700px;">
+                        <div style="text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.75rem;">
+                            <div class="pulse" style="font-size:1.2rem; margin-bottom:10px;">🛡️</div>
+                            Listening for emergency broadcasts...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Detections (BELOW RADAR) -->
                 <div class="card detections-card" id="detections-card">
                     <div class="card-header">
-                        <h2>Recent Detections</h2>
-                        <button class="text-btn" id="view-all-detections">View All →</button>
+                        <div style="display:flex; flex-direction:column;">
+                            <h2 style="display:flex; align-items:center; gap:8px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px; height:18px;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                Intelligence Feed
+                            </h2>
+                            <p style="font-size:0.75rem; color:var(--text-muted);">Historical species classification log</p>
+                        </div>
+                        <button class="text-btn" id="view-all-detections">Analyze History →</button>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="padding: 0;">
                         <div class="detection-list" id="detection-list">
                             <!-- Populated by JS -->
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Zone Health Overview -->
                 <div class="card zone-health-card" id="zone-health-card">
@@ -728,6 +783,26 @@
                                     <span class="result-confidence" id="result-confidence">Confidence: 94.2%</span>
                                 </div>
                             </div>
+
+                            <!-- Vision Validation -->
+                            <div class="vision-validation" style="margin-top:20px; padding:15px; background:rgba(255,255,255,0.03); border-radius:12px; border:1px solid var(--border-color);">
+                                <h4 style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                        <circle cx="12" cy="13" r="4"></circle>
+                                    </svg>
+                                    Secondary Vision Validation
+                                </h4>
+                                <div style="display:flex; gap:12px; align-items:center;">
+                                    <label for="vision-upload" class="primary-btn" style="padding: 6px 12px; font-size: 0.75rem; height: 32px; background:var(--bg-lighter); cursor:pointer;">
+                                        Upload Proof
+                                        <input type="file" id="vision-upload" hidden accept="image/*">
+                                    </label>
+                                    <div id="vision-status" style="font-size:0.75rem; color:var(--text-muted);">
+                                        No photo verified for this event.
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -825,6 +900,15 @@
                     <div class="card-header">
                         <h2>Detection Trends</h2>
                         <div class="card-actions">
+                            <button class="primary-btn" id="export-report-btn" style="padding: 6px 12px; font-size: 0.75rem; height: 32px; gap: 6px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Download Report
+                            </button>
+                            <div class="card-actions-sep" style="width:1px; height:20px; background:var(--border-color); margin:0 4px;"></div>
                             <button class="pill-btn active" data-range="7d">7D</button>
                             <button class="pill-btn" data-range="30d">30D</button>
                             <button class="pill-btn" data-range="90d">90D</button>
@@ -868,6 +952,87 @@
                 </div>
             </div>
         </section>
+
+        <footer class="app-footer">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <div class="logo-icon">
+                            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M24 4L4 14V34L24 44L44 34V14L24 4Z" stroke="var(--accent-green)" stroke-width="3" stroke-linejoin="round"/>
+                                <path d="M24 44V24M24 24L44 14M24 24L4 14" stroke="var(--accent-green)" stroke-width="3" stroke-linejoin="round" opacity="0.5"/>
+                                <circle cx="24" cy="24" r="8" fill="var(--accent-green)" fill-opacity="0.2"/>
+                                <path d="M20 24L23 27L28 21" stroke="var(--accent-green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="logo-name">CropGuard</span>
+                    </div>
+                    <p class="footer-mission">Empowering farmers with AI-driven sensing and hardware diagnostics since 2026. Made with ❤️ in Punjab, India for the world's agriculture.</p>
+                    <div class="social-links">
+                        <a href="https://facebook.com" target="_blank" class="social-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="social-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" class="social-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="#" onclick="document.getElementById('nav-dashboard').click()">Dashboard</a></li>
+                        <li><a href="#" onclick="document.getElementById('nav-zones').click()">Zone Map</a></li>
+                        <li><a href="#" onclick="document.getElementById('nav-detection').click()">Intelligence Feed</a></li>
+                        <li><a href="#" onclick="document.getElementById('nav-analytics').click()">Historical Analytics</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Legitimacy</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Usage</a></li>
+                        <li><a href="#">GDPR Compliance</a></li>
+                        <li><a href="#">Research Ethics</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-contact">
+                    <h4>Help & Support</h4>
+                    <div class="contact-item">
+                        <span class="icon">📞</span>
+                        <div>
+                            <div class="label">KVK Toll-Free</div>
+                            <div class="value">1800-180-1551</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <span class="icon">📧</span>
+                        <div>
+                            <div class="label">Email Support</div>
+                            <div class="value">support@cropguard.ai</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <span class="icon">📍</span>
+                        <div>
+                            <div class="label">Operations HQ</div>
+                            <div class="value">Ludhiana, Punjab, IN</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 CropGuard AI Agricultural Monitoring System. All rights reserved.</p>
+                <div class="footer-status">
+                    <span class="status-dot"></span> All Systems Operational
+                </div>
+            </div>
+        </footer>
 
     </main>
 
@@ -922,13 +1087,13 @@
                 <div class="profile-row"><span>KVK Contact:</span> 1800-180-1551 (Toll Free)</div>
             </div>
 
-            <button class="pill-btn logout-btn"
+            <button class="pill-btn logout-btn" id="logout-btn"
                 style="margin-top:20px; width:100%; justify-content:center; background:var(--accent-red-dim); color:var(--accent-red);">Sign
                 Out</button>
         </div>
     </div>
 
-    <script src="app.js?v=3"></script>
+    <script src="app.js?v=5"></script>
 </body>
 
 </html>

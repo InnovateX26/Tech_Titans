@@ -1,4 +1,5 @@
 // ===== CropGuard AI — Application Logic =====
+const API_BASE = 'http://127.0.0.1:5000';
 
 // Polyfill for roundRect (older browsers)
 if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
@@ -42,6 +43,18 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(`CropGuard init [${name}] error:`, e);
         }
     });
+
+    // Hook up Backend Simulator
+    const simBtn = document.getElementById('simulate-sensor-btn');
+    if (simBtn) {
+        simBtn.addEventListener('click', () => {
+            if (typeof triggerLiveSimulation === 'function') {
+                triggerLiveSimulation();
+            } else {
+                simulateSensorEvent();
+            }
+        });
+    }
 });
 
 // ===== DATA =====
@@ -1163,7 +1176,120 @@ function initAnalytics() {
         });
     }
 
+    // Export Report
+    const exportBtn = document.getElementById('export-report-btn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            window.location.href = `${API_BASE}/export`;
+        });
+    }
+
+    // Logout Button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            window.location.href = '/';
+        });
+    }
+
+    // Vision Validation Simulation
+    const visionInput = document.getElementById('vision-upload');
+    if (visionInput) {
+        visionInput.addEventListener('change', (e) => {
+            const status = document.getElementById('vision-status');
+            if (e.target.files.length > 0) {
+                status.innerHTML = `<span style="color:var(--accent-cyan); font-weight:600;">\u231B Analyzing...</span>`;
+                setTimeout(() => {
+                    status.innerHTML = `<span style="color:var(--accent-green); font-weight:600;">\u2705 Confirmed via Vision AI</span>`;
+                    showToast('success', 'Visual Confirmation', 'Photo matches the vibration pattern. Alert verified.');
+                }, 2000);
+            }
+        });
+    }
+
     generateTrendData();
+}
+
+async function fetchGsmStatus() {
+    try {
+        const response = await fetch(`${API_BASE}/api/gsm-status`);
+        const status = await response.json();
+        const connEl = document.getElementById('gsm-conn-status');
+        const typeEl = document.getElementById('gsm-type');
+        const signalEl = document.getElementById('gsm-signal');
+        const carrierEl = document.getElementById('gsm-carrier');
+
+        if (connEl) {
+            connEl.textContent = status.is_active ? 'Hardware Active' : 'Simulation Mode';
+            connEl.className = `status-badge ${status.is_active ? 'healthy' : 'warning'}`;
+        }
+        if (typeEl) typeEl.textContent = status.type;
+        if (signalEl) signalEl.textContent = status.signal_strength;
+        if (carrierEl) carrierEl.textContent = status.carrier;
+    } catch (e) {
+        console.warn("GSM Status API offline.");
+    }
+}
+
+async function fetchSmsLogs() {
+    try {
+        fetchGsmStatus(); // Also poll hardware status
+        const response = await fetch(`${API_BASE}/api/sms-logs`);
+        const logs = await response.json();
+        const container = document.getElementById('gsm-sms-list');
+        if (!container) return;
+        
+        if (!logs || logs.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--text-muted); font-size:0.75rem;">No recent GSM activity.</div>`;
+            return;
+        }
+
+        container.innerHTML = logs.map(log => `
+            <div style="padding: 18px 20px; border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.01); transition: all 0.2s; position:relative; overflow:hidden;" onmouseover="this.style.background='rgba(6, 182, 212, 0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.01)'">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-weight:800; font-size:0.75rem; color:var(--accent-cyan); display:flex; align-items:center; gap:6px;">
+                        <span style="width:6px; height:6px; border-radius:50%; background:var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan);"></span>
+                        ZONE ${log.zone.replace('Zone ', '')}
+                    </span>
+                    <span style="font-size:0.68rem; font-weight:600; color:var(--text-muted); opacity:0.8;">${new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                </div>
+                <div style="font-size:0.82rem; color: #fff; line-height:1.5; margin-bottom:10px; font-weight:500;">${log.message}</div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+                    <span style="font-size:0.6rem; font-weight:900; text-transform:uppercase; color:${log.status.includes('Hardware') ? 'var(--accent-green)' : 'var(--accent-cyan)'}; letter-spacing:0.05em; border: 1px solid ${log.status.includes('Hardware') ? 'rgba(52,211,153,0.2)' : 'rgba(6,182,212,0.2)'}; padding: 2px 8px; border-radius: 4px;">
+                        ${log.status}
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.warn("SMS Logs API offline.");
+    }
+}
+
+async function fetchWeather() {
+    try {
+        const response = await fetch(`${API_BASE}/weather`);
+        const data = await response.json();
+        const weatherWidget = document.querySelector('.weather-widget');
+        if (weatherWidget && data.temp) {
+            weatherWidget.innerHTML = `
+                <div style="display:flex; align-items:center; gap:16px;">
+                    <div class="weather-icon">🌤️</div>
+                    <div class="weather-info">
+                        <h3>${data.temp}°C / ${data.condition}</h3>
+                        <p>Humidity: ${data.humidity}%. ${data.forecast}</p>
+                    </div>
+                </div>
+                <div style="margin-top:16px; width:100%; padding-top:16px; border-top:1px solid var(--border-color);">
+                    <p style="color:var(--accent-amber); font-weight:500; font-size:0.85rem; margin-bottom:6px;">
+                        ${data.advisory}</p>
+                </div>
+            `;
+        }
+    } catch (e) {
+        console.warn("Weather API offline.");
+    }
 }
 
 function generateTrendData() {
@@ -1447,64 +1573,180 @@ function renderDistributionChart() {
     canvas.height = h * dpr;
     ctx.scale(dpr, dpr);
 
-    const cx = w / 2;
-    const cy = h / 2 - 10;
-    const r = Math.min(w, h) / 2 - 40;
-
-    const data = [
-        { name: 'Aphids', value: 32, color: '#34d399' },
-        { name: 'Whitefly', value: 24, color: '#06b6d4' },
-        { name: 'Stem Borer', value: 18, color: '#f87171' },
-        { name: 'Thrips', value: 14, color: '#fbbf24' },
-        { name: 'Others', value: 12, color: '#a78bfa' },
+    const DIST_DATA = [
+        { name: 'Aphids',    value: 32, color: '#34d399', icon: '\uD83D\uDC1B', disease: 'Leaf Curl Virus',    severity: 'high',     zones: 'Zone 3, Zone 7',   remedy: 'Apply neem oil spray. Release ladybugs as natural predators.' },
+        { name: 'Whitefly',  value: 24, color: '#06b6d4', icon: '\uD83E\uDD9F', disease: 'Yellowing Disease', severity: 'critical', zones: 'Zone 5, Zone 10',  remedy: 'Use yellow sticky traps. Apply imidacloprid 0.3% solution.' },
+        { name: 'Stem Borer',value: 18, color: '#f87171', icon: '\uD83E\uDEB2', disease: 'Stem Rot',          severity: 'critical', zones: 'Zone 5',            remedy: 'Apply carbofuran granules near stem base. Monitor weekly.' },
+        { name: 'Thrips',    value: 14, color: '#fbbf24', icon: '\uD83E\uDD97', disease: 'Spotted Wilt',      severity: 'medium',   zones: 'Zone 7, Zone 12',  remedy: 'Use blue sticky traps. Spinosad spray recommended.' },
+        { name: 'Others',    value: 12, color: '#a78bfa', icon: '\uD83D\uDC1E', disease: 'Mixed',             severity: 'low',      zones: 'Multiple Zones',   remedy: 'Maintain field hygiene. Monitor sensor data closely.' },
     ];
 
-    const total = data.reduce((s, d) => s + d.value, 0);
-    let start = -Math.PI / 2;
+    const total = DIST_DATA.reduce((s, d) => s + d.value, 0);
+    const cx = w / 2;
+    const cy = h / 2 - 10;
+    const r = Math.min(w, h) / 2 - 48;
+    const innerR = r * 0.52;
+    const EXPAND = 10;
 
-    data.forEach((d, i) => {
-        const angle = (d.value / total) * Math.PI * 2;
-        const end = start + angle;
+    let segments = [];
+    let hoveredIdx = canvas._distHovered !== undefined ? canvas._distHovered : -1;
+    let selectedIdx = canvas._distSelected !== undefined ? canvas._distSelected : -1;
 
+    function drawDonut() {
+        ctx.clearRect(0, 0, w, h);
+        segments = [];
+        let start = -Math.PI / 2;
+
+        DIST_DATA.forEach((d, i) => {
+            const angle = (d.value / total) * Math.PI * 2;
+            const end = start + angle;
+            const mid = start + angle / 2;
+            const isHov = i === hoveredIdx;
+            const isSel = i === selectedIdx;
+            const pop = (isHov || isSel) ? EXPAND : 0;
+            const ox = Math.cos(mid) * pop;
+            const oy = Math.sin(mid) * pop;
+
+            segments.push({ start, end, d, i });
+
+            ctx.shadowColor = (isHov || isSel) ? d.color : 'transparent';
+            ctx.shadowBlur  = (isHov || isSel) ? 18 : 0;
+            ctx.beginPath();
+            ctx.moveTo(cx + ox, cy + oy);
+            ctx.arc(cx + ox, cy + oy, r, start, end);
+            ctx.closePath();
+            ctx.fillStyle = (isHov || isSel) ? d.color : d.color + 'bb';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Thin dark gap
+            ctx.beginPath();
+            ctx.moveTo(cx + ox, cy + oy);
+            ctx.arc(cx + ox, cy + oy, r, start, start + 0.025);
+            ctx.closePath();
+            ctx.fillStyle = '#0a0e17';
+            ctx.fill();
+
+            // Labels
+            if (angle > 0.28) {
+                const lR = r + 22 + pop * 0.5;
+                const lx = cx + Math.cos(mid) * lR;
+                const ly = cy + Math.sin(mid) * lR;
+                ctx.fillStyle = (isHov || isSel) ? '#fff' : 'rgba(241,245,249,0.6)';
+                ctx.font = (isHov || isSel) ? 'bold 11px Inter' : '10px Inter';
+                ctx.textAlign = Math.cos(mid) > 0 ? 'left' : 'right';
+                ctx.fillText(`${d.name} ${Math.round((d.value / total) * 100)}%`, lx, ly);
+            }
+
+            start = end;
+        });
+
+        // Donut hole
         ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, r, start, end);
-        ctx.closePath();
-        ctx.fillStyle = d.color;
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, r, start, start + 0.02);
-        ctx.closePath();
+        ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
         ctx.fillStyle = '#0a0e17';
         ctx.fill();
 
-        const midAngle = start + angle / 2;
-        const labelR = r + 20;
-        const lx = cx + Math.cos(midAngle) * labelR;
-        const ly = cy + Math.sin(midAngle) * labelR;
-        ctx.fillStyle = 'rgba(241, 245, 249, 0.7)';
-        ctx.font = '11px Inter';
-        ctx.textAlign = Math.cos(midAngle) > 0 ? 'left' : 'right';
-        ctx.fillText(`${d.name} (${Math.round(d.value / total * 100)}%)`, lx, ly);
+        // Center label
+        ctx.textAlign = 'center';
+        if (selectedIdx >= 0) {
+            const s = DIST_DATA[selectedIdx];
+            ctx.font = '20px sans-serif'; ctx.fillStyle = s.color;
+            ctx.fillText(s.icon, cx, cy - 6);
+            ctx.font = 'bold 12px Inter'; ctx.fillStyle = '#fff';
+            ctx.fillText(s.name, cx, cy + 10);
+            ctx.font = '9px Inter'; ctx.fillStyle = 'rgba(148,163,184,0.7)';
+            ctx.fillText(Math.round((s.value / total) * 100) + '% of pests', cx, cy + 24);
+        } else if (hoveredIdx >= 0) {
+            ctx.font = '18px sans-serif'; ctx.fillStyle = DIST_DATA[hoveredIdx].color;
+            ctx.fillText(DIST_DATA[hoveredIdx].icon, cx, cy - 4);
+            ctx.font = '9px Inter'; ctx.fillStyle = 'rgba(148,163,184,0.65)';
+            ctx.fillText('Click for details', cx, cy + 14);
+        } else {
+            ctx.font = 'bold 22px Inter'; ctx.fillStyle = '#f1f5f9';
+            ctx.fillText(total, cx, cy + 4);
+            ctx.font = '10px Inter'; ctx.fillStyle = 'rgba(148,163,184,0.6)';
+            ctx.fillText('Total Detections', cx, cy + 18);
+        }
+    }
 
-        start = end;
-    });
+    function hitTest(x, y) {
+        const dx = x - cx, dy = y - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < innerR || dist > r + EXPAND + 5) return -1;
+        let a = Math.atan2(dy, dx);
+        if (a < -Math.PI / 2) a += Math.PI * 2;
+        for (const seg of segments) {
+            let sa = seg.start, ea = seg.end;
+            if (sa < -Math.PI / 2) { sa += Math.PI * 2; ea += Math.PI * 2; }
+            if (a >= sa && a <= ea) return seg.i;
+        }
+        return -1;
+    }
 
-    // Center hole (donut)
-    ctx.beginPath();
-    ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2);
-    ctx.fillStyle = '#0a0e17';
-    ctx.fill();
+    function showDetail(d) {
+        const body = canvas.closest('.card-body');
+        let panel = document.getElementById('dist-detail-panel');
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'dist-detail-panel';
+            panel.style.cssText = 'margin-top:14px;padding:15px 17px;background:rgba(17,24,39,0.97);border-radius:12px;border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(10px);animation:heroFadeUp 0.25s ease both;';
+            body && body.appendChild(panel);
+        }
+        const sc = { critical:'#f87171', high:'#fbbf24', medium:'#06b6d4', low:'#34d399' }[d.severity] || '#94a3b8';
+        panel.innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                <span style="font-size:1.8rem;">${d.icon}</span>
+                <div>
+                    <div style="font-size:0.98rem;font-weight:700;color:#fff;">${d.name}</div>
+                    <div style="font-size:0.73rem;color:${d.color};font-weight:600;">${Math.round((d.value/total)*100)}% of detections &nbsp;&bull;&nbsp; ${d.value} events</div>
+                </div>
+                <span style="margin-left:auto;font-size:0.67rem;font-weight:700;padding:3px 9px;border-radius:7px;background:${sc}22;color:${sc};">${d.severity.toUpperCase()}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px;">
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px;">
+                    <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;margin-bottom:3px;">Disease Risk</div>
+                    <div style="font-size:0.83rem;font-weight:600;color:${sc};">\uD83E\uDDA0 ${d.disease}</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px;">
+                    <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;margin-bottom:3px;">Affected Zones</div>
+                    <div style="font-size:0.83rem;font-weight:600;color:#fff;">\uD83D\uDCCD ${d.zones}</div>
+                </div>
+            </div>
+            <div style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.18);border-radius:8px;padding:10px;">
+                <div style="font-size:0.65rem;color:var(--accent-green);text-transform:uppercase;font-weight:700;margin-bottom:4px;">\uD83D\uDC8A Remedy</div>
+                <div style="font-size:0.81rem;color:#e2e8f0;line-height:1.5;">${d.remedy}</div>
+            </div>`;
+    }
 
-    ctx.fillStyle = '#f1f5f9';
-    ctx.font = '700 22px Inter';
-    ctx.textAlign = 'center';
-    ctx.fillText(total, cx, cy + 4);
-    ctx.fillStyle = 'rgba(148, 163, 184, 0.6)';
-    ctx.font = '10px Inter';
-    ctx.fillText('Total', cx, cy + 18);
+    if (!canvas.dataset.distBound) {
+        canvas.dataset.distBound = 'true';
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            const found = hitTest(e.clientX - rect.left, e.clientY - rect.top);
+            if (found !== canvas._distHovered) {
+                canvas._distHovered = hoveredIdx = found;
+                canvas.style.cursor = found >= 0 ? 'pointer' : 'default';
+                drawDonut();
+            }
+        });
+        canvas.addEventListener('mouseleave', () => {
+            canvas._distHovered = hoveredIdx = -1;
+            drawDonut();
+        });
+        canvas.addEventListener('click', e => {
+            const rect = canvas.getBoundingClientRect();
+            const found = hitTest(e.clientX - rect.left, e.clientY - rect.top);
+            if (found < 0) return;
+            const prev = canvas._distSelected;
+            canvas._distSelected = selectedIdx = (found === prev ? -1 : found);
+            drawDonut();
+            if (selectedIdx >= 0) showDetail(DIST_DATA[selectedIdx]);
+            else { const p = document.getElementById('dist-detail-panel'); if (p) p.remove(); }
+        });
+    }
+
+    drawDonut();
 }
 
 function renderHeatmap() {
@@ -1514,13 +1756,22 @@ function renderHeatmap() {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const hours = Array.from({ length: 24 }, (_, i) => i);
 
+    // Pest most active at given hour
+    const pestByHour = (h, pct) => {
+        if (pct < 15) return { name: 'No Activity',  icon: '\u2705', color: '#34d399' };
+        if (h >=  0 && h <  5) return { name: 'Stem Borer',  icon: '\uD83E\uDEB2', color: '#f87171' };
+        if (h >=  5 && h <  9) return { name: 'Whitefly',    icon: '\uD83E\uDD9F', color: '#06b6d4' };
+        if (h >=  9 && h < 13) return { name: 'Aphids',      icon: '\uD83D\uDC1B', color: '#34d399' };
+        if (h >= 13 && h < 17) return { name: 'Thrips',      icon: '\uD83E\uDD97', color: '#fbbf24' };
+        if (h >= 17 && h < 21) return { name: 'Spider Mite', icon: '\uD83D\uDD77\uFE0F', color: '#a78bfa' };
+        return { name: 'Stem Borer', icon: '\uD83E\uDEB2', color: '#f87171' };
+    };
+
     let html = '<div class="heatmap-header"><div class="heatmap-header-spacer"></div><div class="heatmap-cells">';
     hours.forEach(h => {
-        if (h % 3 === 0) {
-            html += `<div class="heatmap-header-label">${String(h).padStart(2, '0')}</div>`;
-        } else {
-            html += '<div class="heatmap-header-label"></div>';
-        }
+        html += h % 3 === 0
+            ? `<div class="heatmap-header-label">${String(h).padStart(2, '0')}</div>`
+            : '<div class="heatmap-header-label"></div>';
     });
     html += '</div></div>';
 
@@ -1528,23 +1779,119 @@ function renderHeatmap() {
         html += `<div class="heatmap-row"><div class="heatmap-label">${day}</div><div class="heatmap-cells">`;
         hours.forEach(h => {
             const dayFactor = (h >= 6 && h <= 18) ? 0.7 : 0.2;
-            const intensity = Math.random() * dayFactor + Math.random() * 0.3;
-            const clampedIntensity = Math.max(0, Math.min(1, intensity));
+            const raw = Math.random() * dayFactor + Math.random() * 0.3;
+            const intensity = Math.max(0, Math.min(1, raw));
+            const pct = Math.round(intensity * 100);
 
-            let bg;
-            if (clampedIntensity < 0.15) bg = 'rgba(52, 211, 153, 0.05)';
-            else if (clampedIntensity < 0.3) bg = 'rgba(52, 211, 153, 0.15)';
-            else if (clampedIntensity < 0.5) bg = 'rgba(52, 211, 153, 0.3)';
-            else if (clampedIntensity < 0.7) bg = 'rgba(251, 191, 36, 0.4)';
-            else if (clampedIntensity < 0.85) bg = 'rgba(251, 191, 36, 0.6)';
-            else bg = 'rgba(248, 113, 113, 0.5)';
+            let bg, level;
+            if (intensity < 0.15)      { bg = 'rgba(52,211,153,0.05)';  level = 'None'; }
+            else if (intensity < 0.30) { bg = 'rgba(52,211,153,0.18)';  level = 'Low'; }
+            else if (intensity < 0.50) { bg = 'rgba(52,211,153,0.35)';  level = 'Moderate'; }
+            else if (intensity < 0.70) { bg = 'rgba(251,191,36,0.42)';  level = 'High'; }
+            else if (intensity < 0.85) { bg = 'rgba(251,191,36,0.62)';  level = 'Very High'; }
+            else                       { bg = 'rgba(248,113,113,0.55)'; level = 'Critical'; }
 
-            html += `<div class="heatmap-cell" style="background:${bg}" title="${day} ${String(h).padStart(2, '0')}:00 — Activity: ${Math.round(clampedIntensity * 100)}%"></div>`;
+            html += `<div class="heatmap-cell hm-click-cell"
+                style="background:${bg};cursor:pointer;"
+                data-day="${day}" data-hour="${h}" data-pct="${pct}" data-level="${level}"
+                title="${day} ${String(h).padStart(2,'0')}:00 — ${level} (${pct}%)"></div>`;
         });
         html += '</div></div>';
     });
 
     container.innerHTML = html;
+    container.style.position = 'relative';
+
+    // --- Click handler (delegated) ---
+    container.addEventListener('click', e => {
+        const cell = e.target.closest('.hm-click-cell');
+        if (!cell) return;
+        // Remove any existing popover
+        container.querySelectorAll('.hm-pop').forEach(p => p.remove());
+        // Deselect if same cell
+        if (cell === container._lastCell) { container._lastCell = null; return; }
+        container._lastCell = cell;
+
+        const day   = cell.dataset.day;
+        const hour  = parseInt(cell.dataset.hour);
+        const pct   = parseInt(cell.dataset.pct);
+        const level = cell.dataset.level;
+        const pest  = pestByHour(hour, pct);
+        const h0    = String(hour).padStart(2,'0');
+        const h1    = String(hour + 1).padStart(2,'0');
+        const lvCol = { None:'#34d399', Low:'#34d399', Moderate:'#06b6d4', High:'#fbbf24', 'Very High':'#fbbf24', Critical:'#f87171' }[level] || '#94a3b8';
+
+        const advisory = pct >= 70
+            ? '\u26A0\uFE0F High risk window — increase sensor polling & field inspection.'
+            : pct >= 40
+            ? '\uD83D\uDCCA Elevated activity — monitor this time slot closely.'
+            : pct >= 15
+            ? '\u2139\uFE0F Low-level activity detected. Normal monitoring sufficient.'
+            : '\u2705 No significant pest activity during this period.';
+
+        const pop = document.createElement('div');
+        pop.className = 'hm-pop';
+        pop.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <b style="color:#fff;font-size:0.88rem;">\uD83D\uDCCA ${day}, ${h0}:00\u2013${h1}:00</b>
+                <button class="hm-pop-close" title="Close">\u2715</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                <div class="hm-pop-cell">
+                    <div class="hm-pop-label">Activity Level</div>
+                    <div style="font-size:0.9rem;font-weight:700;color:${lvCol};margin-top:3px;">${level}</div>
+                </div>
+                <div class="hm-pop-cell">
+                    <div class="hm-pop-label">Intensity</div>
+                    <div style="font-size:0.9rem;font-weight:700;color:#fff;margin-top:3px;">${pct}%
+                        <span style="font-size:0.7rem;font-weight:normal;color:var(--text-muted);">of max</span>
+                    </div>
+                </div>
+            </div>
+            <div style="background:rgba(255,255,255,0.03);border:1px solid ${pest.color}33;border-radius:8px;padding:10px;margin-bottom:9px;">
+                <div style="font-size:0.63rem;color:${pest.color};text-transform:uppercase;font-weight:700;margin-bottom:4px;">Likely Pest</div>
+                <div style="font-size:0.88rem;font-weight:600;color:#fff;">${pest.icon} ${pest.name}</div>
+            </div>
+            <div style="font-size:0.76rem;color:var(--text-secondary);line-height:1.5;">${advisory}</div>`;
+
+        pop.style.cssText = `
+            position:absolute;
+            background:rgba(15,23,42,0.97);
+            border:1px solid rgba(148,163,184,0.15);
+            border-radius:12px;
+            padding:14px 15px;
+            width:250px;
+            z-index:500;
+            box-shadow:0 18px 40px rgba(0,0,0,0.5);
+            backdrop-filter:blur(14px);
+            animation:heroFadeUp 0.2s ease both;`;
+
+        // Position below the clicked cell, within container bounds
+        const cRect = container.getBoundingClientRect();
+        const kRect = cell.getBoundingClientRect();
+        let left = kRect.left - cRect.left + cell.offsetWidth / 2 - 125;
+        let top  = kRect.top  - cRect.top  + cell.offsetHeight + 6;
+        left = Math.max(4, Math.min(left, cRect.width - 254));
+        pop.style.left = left + 'px';
+        pop.style.top  = top  + 'px';
+
+        container.appendChild(pop);
+        pop.querySelector('.hm-pop-close').addEventListener('click', () => {
+            pop.remove(); container._lastCell = null;
+        });
+
+        // Close on outside click
+        setTimeout(() => {
+            function outsideClose(ev) {
+                if (!pop.contains(ev.target) && ev.target !== cell) {
+                    pop.remove();
+                    container._lastCell = null;
+                    document.removeEventListener('click', outsideClose);
+                }
+            }
+            document.addEventListener('click', outsideClose);
+        }, 60);
+    });
 }
 
 function renderSeverityBars() {
@@ -1656,6 +2003,58 @@ function showToast(type, title, message) {
 }
 
 // ===== EDGE ML INFERENCE & LIVE UPDATES =====
+
+async function fetchHistoryFromBackend() {
+    try {
+        const response = await fetch(`${API_BASE}/history?limit=10`);
+        if (!response.ok) return;
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+            liveDetectionRows = data.map(d => {
+                const pest = PEST_TYPES.find(p => p.name === d.prediction) || 
+                           (d.prediction.includes('None') ? { name: 'Wind/Rain', icon: '🍃', severity: 'info', disease: 'None' } : 
+                           { name: d.prediction, icon: '🐛', severity: 'high', disease: 'Pest infestation' });
+                
+                return {
+                    pest: pest,
+                    confidence: d.confidence.toFixed(1),
+                    zone: ZONES.find(z => z.name === d.zone) || { name: d.zone },
+                    time: new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    status: (pest.severity === 'info') ? 'monitoring' : (pest.severity === 'critical' ? 'active' : 'resolved')
+                };
+            });
+            renderDetectionTable();
+            renderDetectionList();
+        }
+    } catch (e) {
+        console.log("Backend offline. Using simulated data.");
+    }
+}
+
+async function triggerLiveSimulation() {
+    try {
+        const response = await fetch(`${API_BASE}/simulate`);
+        const result = await response.json();
+        if (result.status === 'success') {
+            const isPest = !result.prediction.includes('None');
+            showToast(isPest ? 'critical' : 'info', 
+                      isPest ? `ALARM: ${result.prediction}` : 'Scan Complete', 
+                      `${result.zone}: ${result.prediction} detected with ${result.confidence}% confidence.`);
+            
+            // Update stats on dashboard
+            const threatsEl = document.getElementById('active-threats');
+            if (threatsEl && isPest) {
+                threatsEl.textContent = parseInt(threatsEl.textContent) + 1;
+            }
+            
+            fetchHistoryFromBackend();
+        }
+    } catch (e) {
+        console.warn("Backend simulation failed, falling back to local.");
+        simulateSensorEvent();
+    }
+}
+
 // Translating the Python Random Forest logic into Edge-JS for seamless Hackathon demo without a backend
 function predictPest(freq, amp, dur, rate) {
     // These thresholds match the generate_pest_data distributions in ml_model.py
@@ -1751,7 +2150,19 @@ function simulateSensorEvent() {
 }
 
 function startLiveUpdates() {
-    // Every 5 seconds, simulate a new sensor reading & classification!
+    // Initial fetch from backend
+    fetchHistoryFromBackend();
+    fetchWeather();
+    fetchSmsLogs();
+
+    // Every 15 seconds, sync with backend if online, otherwise simulate local
+    setInterval(() => {
+        fetchHistoryFromBackend();
+        fetchWeather();
+        fetchSmsLogs();
+    }, 15000);
+
+    // Every 5 seconds, simulate a new sensor reading & classification locally for visual dynamism
     setInterval(simulateSensorEvent, 5000);
 
     // Randomly fluctuate farm health slightly

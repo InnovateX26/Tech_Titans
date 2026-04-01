@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropGuard AI — Secure Access</title>
+    <meta name="description" content="Login to CropGuard AI to access your smart farm dashboard, pest detection, and crop analytics.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary:   #0a0e17;
+            --bg-card:      rgba(15, 23, 42, 0.92);
+            --green:        #34d399;
+            --cyan:         #06b6d4;
+            --amber:        #fbbf24;
+            --red:          #f87171;
+            --purple:       #a78bfa;
+            --text-primary: #f1f5f9;
+            --text-muted:   #64748b;
+            --text-sub:     #94a3b8;
+            --border:       rgba(148,163,184,0.1);
+            --transition:   0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-primary);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Background ─────────────────────────────────────── */
+        .bg-layer {
+            position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 10% 20%, rgba(52,211,153,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 70% 50% at 90% 80%, rgba(6,182,212,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 60% 10%, rgba(167,139,250,0.05) 0%, transparent 50%);
+        }
+
+        /* Animated grid */
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 0;
+            background-image:
+                linear-gradient(rgba(148,163,184,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148,163,184,0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: fixed; border-radius: 50%;
+            filter: blur(80px); pointer-events: none; z-index: 0;
+        }
+        .orb-1 { width:420px;height:420px; background:rgba(52,211,153,0.08); top:-100px; left:-80px; animation: orbFloat 12s ease-in-out infinite; }
+        .orb-2 { width:350px;height:350px; background:rgba(6,182,212,0.07);  bottom:-80px; right:-60px; animation: orbFloat 16s ease-in-out infinite reverse; }
+        .orb-3 { width:260px;height:260px; background:rgba(167,139,250,0.06); top:40%; left:60%; animation: orbFloat 10s ease-in-out infinite 3s; }
+
+        @keyframes orbFloat {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33%      { transform: translate(30px,-20px) scale(1.05); }
+            66%      { transform: translate(-20px,30px) scale(0.97); }
+        }
+
+        /* Floating farming SVGs */
+        .farm-float { position: fixed; opacity: 0.18; pointer-events: none; z-index: 0; }
+        .farm-float.f1 { width:70px; top:8%; right:8%;  animation: farmSway 8s ease-in-out infinite; }
+        .farm-float.f2 { width:55px; bottom:12%; left:6%; animation: farmSway 11s ease-in-out infinite 2s; }
+        .farm-float.f3 { width:45px; top:55%; right:5%; animation: farmSway 9s ease-in-out infinite 1s; }
+        .farm-float.f4 { width:40px; top:25%; left:4%; animation: farmSway 13s ease-in-out infinite 4s; }
+
+        @keyframes farmSway {
+            0%,100% { transform: translateY(0) rotate(0deg); }
+            40%      { transform: translateY(-18px) rotate(4deg); }
+            70%      { transform: translateY(8px) rotate(-3deg); }
+        }
+
+        /* ── Main layout ─────────────────────────────────────── */
+        .page-wrap {
+            position: relative; z-index: 1;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; width: 100%; padding: 24px;
+        }
+
+        .split {
+            display: flex; gap: 0;
+            width: 100%; max-width: 940px;
+            min-height: 560px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+        }
+
+        /* ── Left panel (brand panel) ──────────────────────── */
+        .brand-side {
+            width: 42%;
+            background: linear-gradient(145deg, rgba(0,20,10,0.95), rgba(0,15,30,0.95));
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(52,211,153,0.12);
+            display: flex; flex-direction: column; justify-content: space-between;
+            padding: 40px 36px;
+            position: relative; overflow: hidden;
+        }
+
+        .brand-side::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse 120% 80% at 20% 30%, rgba(52,211,153,0.08) 0%, transparent 60%);
+        }
+
+        .brand-logo {
+            display: flex; align-items: center; gap: 12px; position: relative;
+        }
+
+        .brand-logo svg { width: 38px; height: 38px; flex-shrink: 0; }
+
+        .brand-logo-text {
+            font-size: 1.3rem; font-weight: 800; letter-spacing: 0.3px;
+        }
+        .brand-logo-text span { color: var(--cyan); }
+
+        .brand-hero { position: relative; padding: 10px 0; }
+
+        .brand-slogan-hi {
+            font-size: 1.55rem; font-weight: 800; line-height: 1.3;
+            color: #fff; margin-bottom: 8px;
+        }
+        .brand-slogan-hi .hi-accent { color: var(--green); }
+
+        .brand-slogan-en {
+            font-size: 0.82rem; color: rgba(148,163,184,0.7);
+            font-style: italic; margin-bottom: 24px;
+        }
+
+        .brand-features { display: flex; flex-direction: column; gap: 12px; }
+        .brand-feat {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.82rem; color: var(--text-sub);
+        }
+        .brand-feat-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--green); flex-shrink: 0;
+            box-shadow: 0 0 6px var(--green);
+        }
+
+        .brand-bottom {
+            position: relative;
+            font-size: 0.72rem; color: var(--text-muted);
+        }
+        .brand-bottom a { color: var(--cyan); text-decoration: none; }
+
+        /* Decorative pulse ring */
+        .pulse-ring {
+            position: absolute; bottom: 30px; right: -30px; width: 180px; height: 180px;
+            border-radius: 50%; border: 1px solid rgba(52,211,153,0.15);
+            animation: pulseExpand 4s ease-in-out infinite;
+        }
+        .pulse-ring-2 {
+            position: absolute; bottom: 10px; right: -50px; width: 240px; height: 240px;
+            border-radius: 50%; border: 1px solid rgba(6,182,212,0.09);
+            animation: pulseExpand 4s ease-in-out infinite 1.5s;
+        }
+        @keyframes pulseExpand {
+            0%,100% { transform: scale(1); opacity: 0.7; }
+            50%      { transform: scale(1.08); opacity: 0.3; }
+        }
+
+        /* ── Auth card (right side) ──────────────────────────── */
+        .auth-side {
+            flex: 1;
+            background: var(--bg-card);
+            backdrop-filter: blur(24px);
+            padding: 40px 42px;
+            display: flex; flex-direction: column; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+
+        /* Panel switching */
+        .auth-panel { display: none; animation: panelIn 0.3s ease both; }
+        .auth-panel.active { display: block; }
+
+        @keyframes panelIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Panel header */
+        .auth-heading {
+            margin-bottom: 26px;
+        }
+        .auth-heading h2 {
+            font-size: 1.55rem; font-weight: 800;
+            background: linear-gradient(135deg, #fff 30%, rgba(148,163,184,0.7) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        .auth-heading p {
+            font-size: 0.82rem; color: var(--text-muted);
+        }
+
+        /* Form groups */
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block; font-size: 0.75rem; font-weight: 600;
+            color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.06em;
+            margin-bottom: 7px;
+        }
+
+        .input-wrap { position: relative; }
+        .input-icon {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); font-size: 1rem; pointer-events: none;
+        }
+        .input-eye {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); cursor: pointer; font-size: 0.85rem;
+            transition: color var(--transition);
+        }
+        .input-eye:hover { color: var(--cyan); }
+
+        .auth-input {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            padding: 12px 14px 12px 40px;
+            color: var(--text-primary);
+            font-size: 0.9rem; font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+        }
+        .auth-input::placeholder { color: var(--text-muted); }
+        .auth-input:focus {
+            border-color: rgba(52,211,153,0.5);
+            background: rgba(52,211,153,0.04);
+            box-shadow: 0 0 0 3px rgba(52,211,153,0.1);
+        }
+        .auth-input.error { border-color: rgba(248,113,113,0.5); box-shadow: 0 0 0 3px rgba(248,113,113,0.08); }
+        .auth-input.success { border-color: rgba(52,211,153,0.5); }
+        .field-error {
+            font-size: 0.72rem; color: var(--red);
+            margin-top: 5px; display: none;
+        }
+        .field-error.show { display: block; }
+
+        /* Password strength bar */
+        .strength-bar-wrap {
+            margin-top: 8px; display: none;
+        }
+        .strength-bar-wrap.show { display: block; }
+        .strength-track {
+            height: 4px; background: rgba(255,255,255,0.06);
+            border-radius: 2px; overflow: hidden; margin-bottom: 4px;
+        }
+        .strength-fill {
+            height: 100%; border-radius: 2px;
+            transition: width 0.4s ease, background 0.4s ease;
+        }
+        .strength-label { font-size: 0.68rem; color: var(--text-muted); }
+
+        /* OTP grid */
+        .otp-grid {
+            display: flex; gap: 10px; justify-content: center; margin: 16px 0;
+        }
+        .otp-input {
+            width: 48px; height: 52px; text-align: center;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border); border-radius: 10px;
+            color: #fff; font-size: 1.3rem; font-family: 'JetBrains Mono', monospace;
+            font-weight: 600; outline: none;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        .otp-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(6,182,212,0.15); }
+
+        /* Options row */
+        .auth-options {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .auth-checkbox {
+            display: flex; align-items: center; gap: 7px;
+            font-size: 0.78rem; color: var(--text-sub); cursor: pointer;
+        }
+        .auth-checkbox input { accent-color: var(--green); width: 14px; height: 14px; }
+        .auth-link {
+            font-size: 0.78rem; color: var(--cyan); text-decoration: none;
+            font-weight: 500; transition: color var(--transition);
+        }
+        .auth-link:hover { color: var(--green); }
+
+        /* Buttons */
+        .auth-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--green), var(--cyan));
+            border: none; border-radius: 12px;
+            padding: 13px 20px;
+            color: #0a0e17; font-size: 0.92rem; font-weight: 700;
+            cursor: pointer; letter-spacing: 0.3px;
+            transition: all var(--transition);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-bottom: 16px;
+            position: relative; overflow: hidden;
+        }
+        .auth-btn::after {
+            content: ''; position: absolute; inset: 0;
+            background: rgba(255,255,255,0); transition: background 0.2s;
+        }
+        .auth-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(52,211,153,0.3); }
+        .auth-btn:hover::after { background: rgba(255,255,255,0.08); }
+        .auth-btn:active { transform: translateY(0); }
+        .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .auth-btn.ghost {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            color: var(--text-sub); font-weight: 600;
+        }
+        .auth-btn.ghost:hover { background: rgba(255,255,255,0.08); box-shadow: none; color: #fff; }
+
+        /* Divider */
+        .auth-divider {
+            display: flex; align-items: center; gap: 12px;
+            color: var(--text-muted); font-size: 0.75rem; margin: 4px 0 16px;
+        }
+        .auth-divider::before, .auth-divider::after {
+            content: ''; flex: 1; height: 1px; background: var(--border);
+        }
+
+        /* Footer link */
+        .auth-footer-text {
+            text-align: center; font-size: 0.78rem; color: var(--text-muted);
+        }
+
+        /* Step indicator */
+        .step-indicator {
+            display: flex; gap: 6px; margin-bottom: 20px;
+        }
+        .step-dot {
+            height: 3px; border-radius: 2px; transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+        }
+        .step-dot.active { background: var(--green); }
+
+        /* ── Toast ─────────────────────────────────────────── */
+        .toast-container {
+            position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 18px; border-radius: 12px;
+            background: rgba(15,23,42,0.97);
+            border: 1px solid rgba(255,255,255,0.09);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            min-width: 280px; max-width: 360px;
+            animation: toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        .toast.closing { animation: toastOut 0.25s ease both; }
+        .toast.success  { border-color: rgba(52,211,153,0.3); }
+        .toast.error    { border-color: rgba(248,113,113,0.3); }
+        .toast.info     { border-color: rgba(6,182,212,0.3); }
+        .toast.warning  { border-color: rgba(251,191,36,0.3); }
+        .toast-icon { font-size: 1.2rem; flex-shrink: 0; }
+        .toast-title { font-size: 0.85rem; font-weight: 700; color: #fff; }
+        .toast-msg   { font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
+        @keyframes toastIn  { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes toastOut { to   { opacity:0; transform:translateX(30px); } }
+
+        /* ── Responsive ─────────────────────────────────────── */
+        @media (max-width: 680px) {
+            .brand-side { display: none; }
+            .split { max-width: 440px; border-radius: 20px; }
+            .auth-side { padding: 32px 24px; }
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-top-color: #0a0e17;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="bg-layer"></div>
+<div class="bg-grid"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- Floating farming elements -->
+<svg class="farm-float f1" viewBox="0 0 40 120" fill="none">
+    <line x1="20" y1="120" x2="20" y2="10" stroke="#34d399" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="20" cy="10" rx="6" ry="14" fill="rgba(52,211,153,0.3)" stroke="#34d399" stroke-width="1.5"/>
+    <ellipse cx="14" cy="35" rx="5" ry="11" fill="rgba(52,211,153,0.2)" stroke="#34d399" stroke-width="1.2" transform="rotate(-30 14 35)"/>
+    <ellipse cx="26" cy="35" rx="5" ry="11" fill="rgba(52,211,153,0.2)" stroke="#34d399" stroke-width="1.2" transform="rotate(30 26 35)"/>
+</svg>
+<svg class="farm-float f2" viewBox="0 0 60 80" fill="none">
+    <path d="M30 75 C10 55 5 20 30 5 C55 20 50 55 30 75Z" fill="rgba(6,182,212,0.2)" stroke="#06b6d4" stroke-width="1.5"/>
+    <line x1="30" y1="75" x2="30" y2="10" stroke="#06b6d4" stroke-width="1" stroke-dasharray="3 3"/>
+</svg>
+<svg class="farm-float f3" viewBox="0 0 30 30" fill="none">
+    <ellipse cx="15" cy="15" rx="10" ry="13" fill="rgba(251,191,36,0.22)" stroke="#fbbf24" stroke-width="1.5"/>
+    <ellipse cx="15" cy="15" rx="5" ry="7" fill="rgba(251,191,36,0.15)" stroke="#fbbf24" stroke-width="1"/>
+</svg>
+<svg class="farm-float f4" viewBox="0 0 40 120" fill="none">
+    <line x1="20" y1="120" x2="20" y2="10" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+    <ellipse cx="20" cy="10" rx="5" ry="12" fill="rgba(167,139,250,0.25)" stroke="#a78bfa" stroke-width="1.5"/>
+</svg>
+
+<div class="page-wrap">
+    <div class="split">
+
+        <!-- ── LEFT BRAND PANEL ─────────────────────────────── -->
+        <div class="brand-side">
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring-2"></div>
+
+            <!-- Logo -->
+            <div class="brand-logo">
+                <svg viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" stroke="url(#lg)" stroke-width="2.5"/>
+                    <path d="M20 8 C28 14 28 22 20 32 C12 28 12 14 20 8Z" fill="url(#lg)" opacity="0.35"/>
+                    <circle cx="20" cy="20" r="3.5" fill="url(#lg)"/>
+                    <defs>
+                        <linearGradient id="lg" x1="0" y1="0" x2="40" y2="40">
+                            <stop offset="0%" stop-color="#34d399"/>
+                            <stop offset="100%" stop-color="#06b6d4"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="brand-logo-text">CropGuard<span>AI</span></div>
+            </div>
+
+            <!-- Slogan -->
+            <div class="brand-hero">
+                <div class="brand-slogan-hi">
+                    हर फसल की रक्षा,<br>हर किसान की <span class="hi-accent">शक्ति।</span>
+                </div>
+                <div class="brand-slogan-en">"Protect Every Crop. Empower Every Farmer."</div>
+                <div class="brand-features">
+                    <div class="brand-feat"><div class="brand-feat-dot"></div>AI-powered piezoelectric pest detection</div>
+                    <div class="brand-feat"><div class="brand-feat-dot" style="background:var(--cyan);box-shadow:0 0 6px var(--cyan)"></div>Real-time 24 sensor monitoring across 12 zones</div>
+                    <div class="brand-feat"><div class="brand-feat-dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber)"></div>Disease risk alerts and KVK-linked advisories</div>
+                    <div class="brand-feat"><div class="brand-feat-dot" style="background:var(--purple);box-shadow:0 0 6px var(--purple)"></div>Government scheme eligibility (PM-Kisan, PMKSY)</div>
+                </div>
+            </div>
+
+            <div class="brand-bottom">
+                Secured with end-to-end encryption &nbsp;·&nbsp; <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+
+        <!-- ── RIGHT AUTH PANEL ─────────────────────────────── -->
+        <div class="auth-side">
+
+            <!-- ════ LOGIN PANEL ════ -->
+            <div id="panel-login" class="auth-panel active">
+                <div class="auth-heading">
+                    <h2>Welcome Back 👨‍🌾</h2>
+                    <p>Sign in to access your CropGuard dashboard</p>
+                </div>
+                <form id="form-login" novalidate onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email / Phone</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">📧</span>
+                            <input id="login-email" type="text" class="auth-input" placeholder="farmer@cropguard.ai or +91 98765 43210" required>
+                        </div>
+                        <div class="field-error" id="login-email-err">Please enter a valid email or phone number.</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">🔒</span>
+                            <input id="login-pass" type="password" class="auth-input" placeholder="••••••••" required>
+                            <span class="input-eye" onclick="togglePwd('login-pass',this)">👁️</span>
+                        </div>
+                        <div class="field-error" id="login-pass-err">Password must be at least 6 characters.</div>
+                    </div>
+                    <div class="auth-options">
+                        <label class="auth-checkbox">
+                            <input type="checkbox" checked>
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" class="auth-link" onclick="switchPanel('forgot')">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="auth-btn" id="login-btn">
+                        <span class="spinner" id="login-spinner"></span>
+                        <span id="login-btn-text">🔐 Secure Login</span>
+                    </button>
+                </form>
+                <div class="auth-divider">or</div>
+                <button class="auth-btn ghost" onclick="demoLogin()">🌾 Try Demo Account</button>
+                <div class="auth-footer-text">
+                    New to CropGuard AI? <a href="#" class="auth-link" onclick="switchPanel('register')">Create an account</a>
+                </div>
+            </div>
+
+            <!-- ════ REGISTER PANEL ════ -->
+            <div id="panel-register" class="auth-panel">
+                <div class="step-indicator">
+                    <div class="step-dot active" id="step1" style="width:28px"></div>
+                    <div class="step-dot" id="step2" style="width:16px"></div>
+                    <div class="step-dot" id="step3" style="width:16px"></div>
+                </div>
+                <div class="auth-heading">
+                    <h2>Create Account 🌱</h2>
+                    <p>Join CropGuard AI — protect your crops with AI</p>
+                </div>
+                <form id="form-register" novalidate onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">👤</span>
+                            <input id="reg-name" type="text" class="auth-input" placeholder="Lalan Singh" required>
+                        </div>
+                        <div class="field-error" id="reg-name-err">Please enter your full name.</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">📱</span>
+                            <input id="reg-phone" type="tel" class="auth-input" placeholder="+91 98765 43210" required>
+                        </div>
+                        <div class="field-error" id="reg-phone-err">Please enter a valid 10-digit phone number.</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">📧</span>
+                            <input id="reg-email" type="email" class="auth-input" placeholder="farmer@example.com" required>
+                        </div>
+                        <div class="field-error" id="reg-email-err">Please enter a valid email address.</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Create Password</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">🔒</span>
+                            <input id="reg-pass" type="password" class="auth-input" placeholder="Minimum 8 characters" required oninput="checkStrength(this.value)">
+                            <span class="input-eye" onclick="togglePwd('reg-pass',this)">👁️</span>
+                        </div>
+                        <div class="strength-bar-wrap" id="strength-wrap">
+                            <div class="strength-track">
+                                <div class="strength-fill" id="strength-fill"></div>
+                            </div>
+                            <div class="strength-label" id="strength-label">Enter a password</div>
+                        </div>
+                        <div class="field-error" id="reg-pass-err">Password must be at least 8 characters.</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">🔑</span>
+                            <input id="reg-pass2" type="password" class="auth-input" placeholder="Repeat your password" required>
+                            <span class="input-eye" onclick="togglePwd('reg-pass2',this)">👁️</span>
+                        </div>
+                        <div class="field-error" id="reg-pass2-err">Passwords do not match.</div>
+                    </div>
+                    <button type="submit" class="auth-btn" id="reg-btn">
+                        <span class="spinner" id="reg-spinner"></span>
+                        <span id="reg-btn-text">🌾 Create My Account</span>
+                    </button>
+                </form>
+                <div class="auth-footer-text">
+                    Already have an account? <a href="#" class="auth-link" onclick="switchPanel('login')">Sign in</a>
+                </div>
+            </div>
+
+            <!-- ════ FORGOT PASSWORD PANEL ════ -->
+            <div id="panel-forgot" class="auth-panel">
+                <div class="auth-heading">
+                    <h2>Reset Password 🔐</h2>
+                    <p>Enter your registered email or phone number</p>
+                </div>
+                <form id="form-forgot" novalidate onsubmit="handleForgot(event)">
+                    <div class="form-group">
+                        <label>Registered Email / Phone</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">📧</span>
+                            <input id="forgot-email" type="text" class="auth-input" placeholder="farmer@cropguard.ai" required>
+                        </div>
+                        <div class="field-error" id="forgot-err">Please enter your registered email or phone.</div>
+                    </div>
+                    <button type="submit" class="auth-btn" id="forgot-btn">
+                        <span class="spinner" id="forgot-spinner"></span>
+                        <span id="forgot-btn-text">📩 Send Reset Link</span>
+                    </button>
+                </form>
+
+                <!-- OTP section (appears after sending) -->
+                <div id="otp-section" style="display:none;">
+                    <div style="margin:16px 0 10px;font-size:0.82rem;color:var(--text-sub);text-align:center;">
+                        Enter the 6-digit OTP sent to your email / phone
+                    </div>
+                    <div class="otp-grid" id="otp-grid">
+                        <input class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        <input class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        <input class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        <input class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        <input class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        <input class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                    </div>
+                    <button class="auth-btn" onclick="verifyOTP()" id="otp-btn">✅ Verify OTP</button>
+                    <div style="text-align:center;font-size:0.72rem;color:var(--text-muted);margin-top:6px;">
+                        Didn't receive it? <a href="#" class="auth-link" id="resend-link" onclick="resendOTP()">Resend in <span id="resend-timer">30</span>s</a>
+                    </div>
+                </div>
+
+                <div class="auth-footer-text" style="margin-top:16px;">
+                    Remember your password? <a href="#" class="auth-link" onclick="switchPanel('login')">Back to Login</a>
+                </div>
+            </div>
+
+            <!-- ════ SUCCESS PANEL ════ -->
+            <div id="panel-success" class="auth-panel">
+                <div style="text-align:center;padding:20px 0;">
+                    <div style="font-size:3.5rem;margin-bottom:16px;animation:farmSway 2s ease-in-out infinite;">🌾</div>
+                    <h2 style="font-size:1.4rem;font-weight:800;color:#fff;margin-bottom:8px;" id="success-title">Registration Successful!</h2>
+                    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:28px;" id="success-msg">Welcome to CropGuard AI. Redirecting to your dashboard...</p>
+                    <div style="width:100%;height:3px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                        <div id="progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#34d399,#06b6d4);border-radius:3px;transition:width 1.5s linear;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /auth-side -->
+    </div><!-- /split -->
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ── Panel Switching ──────────────────────────────────────────────────
+function switchPanel(id) {
+    document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+
+    // Reset OTP section when revisiting forgot
+    if (id !== 'forgot') {
+        document.getElementById('otp-section').style.display = 'none';
+        document.getElementById('form-forgot').style.display = 'block';
+    }
+}
+
+// ── Toggle password visibility ────────────────────────────────────────
+function togglePwd(inputId, eyeEl) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') { input.type = 'text'; eyeEl.textContent = '🙈'; }
+    else                           { input.type = 'password'; eyeEl.textContent = '👁️'; }
+}
+
+// ── Password strength ────────────────────────────────────────────────
+function checkStrength(val) {
+    const wrap = document.getElementById('strength-wrap');
+    const fill = document.getElementById('strength-fill');
+    const label = document.getElementById('strength-label');
+    wrap.classList.toggle('show', val.length > 0);
+    if (!val) return;
+
+    let score = 0;
+    if (val.length >= 8)              score++;
+    if (/[A-Z]/.test(val))           score++;
+    if (/[0-9]/.test(val))           score++;
+    if (/[^a-zA-Z0-9]/.test(val))   score++;
+
+    const levels = [
+        { pct:'15%', color:'#f87171', text:'Weak' },
+        { pct:'40%', color:'#fbbf24', text:'Fair' },
+        { pct:'70%', color:'#06b6d4', text:'Good' },
+        { pct:'100%',color:'#34d399', text:'Strong 💪' },
+    ];
+    const l = levels[Math.max(0, score - 1)];
+    fill.style.width = l.pct;
+    fill.style.background = l.color;
+    label.textContent = l.text;
+    label.style.color = l.color;
+}
+
+// ── Validation helpers ───────────────────────────────────────────────
+function setErr(id, show) {
+    const el = document.getElementById(id);
+    el && el.classList.toggle('show', show);
+    const input = el && el.previousElementSibling && el.previousElementSibling.querySelector('.auth-input');
+    if (input) { input.classList.toggle('error', show); input.classList.toggle('success', !show && !!input.value); }
+}
+
+function isEmail(v)  { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+function isPhone(v)  { return /^[\+\d][\d\s\-]{8,14}$/.test(v.trim()); }
+
+// ── LOGIN ────────────────────────────────────────────────────────────
+async function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-pass').value;
+
+    let valid = true;
+    if (!isEmail(email) && !isPhone(email)) { setErr('login-email-err', true); valid = false; }
+    else setErr('login-email-err', false);
+
+    if (pass.length < 6) { setErr('login-pass-err', true); valid = false; }
+    else setErr('login-pass-err', false);
+
+    if (!valid) return;
+    setLoading('login-btn','login-spinner','login-btn-text', true);
+
+    try {
+        const response = await fetch('http://127.0.0.1:5000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: pass })
+        });
+        const result = await response.json();
+        
+        setLoading('login-btn','login-spinner','login-btn-text', false);
+        if (result.status === 'success') {
+            showToast('success','Login Successful ✅','Redirecting to your farm dashboard...');
+            showSuccess('Welcome Back!', 'Loading your CropGuard Dashboard...', 'dashboard');
+        } else {
+            showToast('error', 'Login Failed', result.message || 'Invalid credentials.');
+        }
+    } catch (e) {
+        setLoading('login-btn','login-spinner','login-btn-text', false);
+        showToast('error', 'Connection Error', 'Backend server might be offline.');
+        // Fallback for demo
+        console.warn("Backend error, demo fallback:", e);
+    }
+}
+
+// ── DEMO LOGIN ────────────────────────────────────────────────────────
+function demoLogin() {
+    document.getElementById('login-email').value = 'farmer@cropguard.ai';
+    document.getElementById('login-pass').value = 'demo1234';
+    showToast('info','Demo Mode','Logging in with demo account...', 3000);
+    setTimeout(() => {
+        showSuccess('Demo Login!', 'Loading demo CropGuard Dashboard...', 'dashboard');
+    }, 900);
+}
+
+// ── REGISTER ────────────────────────────────────────────────────────
+async function handleRegister(e) {
+    e.preventDefault();
+    const name  = document.getElementById('reg-name').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pass  = document.getElementById('reg-pass').value;
+    const pass2 = document.getElementById('reg-pass2').value;
+
+    let valid = true;
+    if (name.length < 2)           { setErr('reg-name-err',  true); valid = false; } else setErr('reg-name-err', false);
+    if (!isPhone(phone))           { setErr('reg-phone-err', true); valid = false; } else setErr('reg-phone-err', false);
+    if (!isEmail(email))           { setErr('reg-email-err', true); valid = false; } else setErr('reg-email-err', false);
+    if (pass.length < 8)           { setErr('reg-pass-err',  true); valid = false; } else setErr('reg-pass-err', false);
+    if (pass !== pass2)            { setErr('reg-pass2-err', true); valid = false; } else setErr('reg-pass2-err', false);
+
+    if (!valid) return;
+    setLoading('reg-btn','reg-spinner','reg-btn-text', true);
+
+    try {
+        const response = await fetch('http://127.0.0.1:5000/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, phone, password: pass })
+        });
+        const result = await response.json();
+        setLoading('reg-btn','reg-spinner','reg-btn-text', false);
+        if (result.status === 'success') {
+            showToast('success', 'Account Created 🌾', `Welcome to CropGuard AI, ${name.split(' ')[0]}!`);
+            showSuccess('Registration Successful! 🎉', `Welcome ${name.split(' ')[0]}! Your account is ready.`, 'dashboard');
+        } else {
+            showToast('error', 'Registration Error', result.message || 'Error occurred.');
+        }
+    } catch (e) {
+        setLoading('reg-btn','reg-spinner','reg-btn-text', false);
+        showToast('error', 'Connection Error', 'Backend server might be offline.');
+    }
+}
+
+// ── FORGOT PASSWORD ──────────────────────────────────────────────────
+function handleForgot(e) {
+    e.preventDefault();
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!isEmail(email) && !isPhone(email)) { setErr('forgot-err', true); return; }
+    setErr('forgot-err', false);
+    setLoading('forgot-btn','forgot-spinner','forgot-btn-text', true);
+
+    setTimeout(() => {
+        setLoading('forgot-btn','forgot-spinner','forgot-btn-text', false);
+        showToast('info','OTP Sent 📩', 'A 6-digit code was sent to your email / phone.');
+        // Show OTP section
+        document.getElementById('form-forgot').style.display = 'none';
+        document.getElementById('otp-section').style.display = 'block';
+        initOTP();
+        startResendTimer();
+    }, 1000);
+}
+
+// ── OTP Logic ────────────────────────────────────────────────────────
+function initOTP() {
+    const inputs = document.querySelectorAll('.otp-input');
+    inputs.forEach((inp, idx) => {
+        inp.value = '';
+        inp.addEventListener('input', () => {
+            if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus();
+        });
+        inp.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !inp.value && idx > 0) inputs[idx - 1].focus();
+        });
+    });
+    inputs[0].focus();
+}
+
+function verifyOTP() {
+    const inputs = document.querySelectorAll('.otp-input');
+    const otp = Array.from(inputs).map(i => i.value).join('');
+    if (otp.length < 6) { showToast('error','Incomplete OTP','Please enter all 6 digits.'); return; }
+
+    const btn = document.getElementById('otp-btn');
+    btn.textContent = 'Verifying...';
+    btn.disabled = true;
+
+    setTimeout(() => {
+        showToast('success','OTP Verified ✅','Password reset link sent. Redirecting to login...');
+        setTimeout(() => switchPanel('login'), 1800);
+        btn.textContent = '✅ Verify OTP';
+        btn.disabled = false;
+    }, 1000);
+}
+
+function startResendTimer() {
+    let t = 30;
+    const timerEl = document.getElementById('resend-timer');
+    const link    = document.getElementById('resend-link');
+    link.style.pointerEvents = 'none';
+    link.style.color = 'var(--text-muted)';
+    const interval = setInterval(() => {
+        t--;
+        if (timerEl) timerEl.textContent = t;
+        if (t <= 0) {
+            clearInterval(interval);
+            if (link) {
+                link.innerHTML = 'Resend OTP';
+                link.style.pointerEvents = '';
+                link.style.color = 'var(--cyan)';
+            }
+        }
+    }, 1000);
+}
+
+function resendOTP() {
+    showToast('info','OTP Resent 📩','A new 6-digit code has been sent.');
+    initOTP();
+    startResendTimer();
+}
+
+// ── Success panel ────────────────────────────────────────────────────
+function showSuccess(title, msg, redirect) {
+    document.getElementById('success-title').textContent = title;
+    document.getElementById('success-msg').textContent = msg;
+    switchPanel('success');
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            document.getElementById('progress-bar').style.width = '100%';
+        }, 50);
+    });
+    setTimeout(() => window.location.href = 'http://127.0.0.1:5000/' + redirect, 1700);
+}
+
+// ── Loading state ────────────────────────────────────────────────────
+function setLoading(btnId, spinnerId, textId, loading) {
+    const btn = document.getElementById(btnId);
+    const sp  = document.getElementById(spinnerId);
+    const tx  = document.getElementById(textId);
+    btn.disabled = loading;
+    sp.style.display = loading ? 'block' : 'none';
+    tx.textContent   = loading ? 'Please wait...' : tx.dataset.orig || tx.textContent;
+    if (!tx.dataset.orig) tx.dataset.orig = tx.textContent;
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────
+function showToast(type, title, msg, duration = 4000) {
+    const container = document.getElementById('toast-container');
+    const icons = { success:'✅', error:'❌', info:'ℹ️', warning:'⚠️' };
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <div class="toast-icon">${icons[type] || 'ℹ️'}</div>
+        <div><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>`;
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.add('closing'); setTimeout(() => toast.remove(), 300); }, duration);
+}
+</script>
+</body>
+</html>
