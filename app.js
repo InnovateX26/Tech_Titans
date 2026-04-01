@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ['LanguageToggle', initLanguageToggle],
         ['ProfilePanel', initProfilePanel],
         ['ExtraInteractions', initExtraInteractions],
+        ['HomePageInteractions', initHomePageInteractions],
     ];
 
     inits.forEach(([name, fn]) => {
@@ -165,6 +166,7 @@ function initNavigation() {
     const sidebar = document.getElementById('sidebar');
 
     const pageInfo = {
+        home: { title: 'Home', subtitle: 'Welcome to your smart farm system' },
         dashboard: { title: 'Dashboard', subtitle: 'Real-time farm monitoring overview' },
         zones: { title: 'Zone Map', subtitle: 'Farm layout and sensor distribution' },
         detection: { title: 'Detection', subtitle: 'ML-powered vibration classification' },
@@ -2042,7 +2044,7 @@ function initExtraInteractions() {
     logoutBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             showToast('warning', 'Session Ended', 'Logging out of CropGuard AI system...');
-            setTimeout(() => location.reload(), 1500);
+            setTimeout(() => window.location.href = 'login.html', 1500);
         });
     });
 
@@ -2062,4 +2064,377 @@ function initExtraInteractions() {
             showToast('info', 'Sensor Target Updated', `Live telemetry feed switched to track: ${e.target.options[e.target.selectedIndex].text}`);
         });
     }
+}
+
+// ===== HOME PAGE INTERACTIONS =====
+function initHomePageInteractions() {
+
+    // ── 1. Farmer name pill → open profile panel ──────────────────────────
+    const farmerPill = document.querySelector('.hero-info-pill:first-child');
+    if (farmerPill) {
+        farmerPill.style.cursor = 'pointer';
+        farmerPill.title = 'View Farmer Profile';
+        farmerPill.addEventListener('click', () => {
+            const panel   = document.getElementById('profile-panel');
+            const overlay = document.getElementById('notification-overlay');
+            if (panel && overlay) {
+                panel.classList.add('open');
+                overlay.classList.add('open');
+            }
+        });
+    }
+
+    // ── 2. Crop pill (Wheat & Cotton) → go to Dashboard ──────────────────
+    const cropPill = document.querySelector('.hero-info-pills .hero-info-pill:nth-child(2)');
+    if (cropPill) {
+        cropPill.style.cursor = 'pointer';
+        cropPill.title = 'View Dashboard';
+        cropPill.addEventListener('click', () => {
+            document.getElementById('nav-dashboard')?.click();
+        });
+    }
+
+    // ── 3. Sensors pill → go to Zone Map ─────────────────────────────────
+    const sensorPill = document.querySelector('.hero-info-pills .hero-info-pill:nth-child(3)');
+    if (sensorPill) {
+        sensorPill.style.cursor = 'pointer';
+        sensorPill.title = 'View Zone Map';
+        sensorPill.addEventListener('click', () => {
+            document.getElementById('nav-zones')?.click();
+        });
+    }
+
+    // ── 4. Weather Advisory card ──────────────────────────────────────────
+    const weatherCard = document.getElementById('home-feat-weather');
+    if (weatherCard) {
+        weatherCard.style.cursor = 'pointer';
+        weatherCard.addEventListener('click', () => openWeatherModal());
+    }
+
+    // ── 5. Govt. Schemes card ─────────────────────────────────────────────
+    const schemesCard = document.getElementById('home-feat-schemes');
+    if (schemesCard) {
+        schemesCard.style.cursor = 'pointer';
+        schemesCard.addEventListener('click', () => openSchemesModal());
+    }
+
+    // inject modal styles once
+    injectHomeModalStyles();
+}
+
+// ── Weather Modal ──────────────────────────────────────────────────────────
+function openWeatherModal() {
+    closeExistingModal();
+    const modal = document.createElement('div');
+    modal.id = 'home-modal-overlay';
+    modal.innerHTML = `
+        <div class="home-modal" id="home-modal-box" role="dialog" aria-modal="true">
+            <div class="home-modal-header">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:1.5rem;">🌤️</span>
+                    <div>
+                        <h3 style="margin:0;font-size:1.05rem;font-weight:700;">Weather Advisory</h3>
+                        <p style="margin:0;font-size:0.75rem;color:var(--text-muted);">Punjab, India — Today</p>
+                    </div>
+                </div>
+                <button class="home-modal-close" id="home-modal-close-btn">✕</button>
+            </div>
+            <div class="home-modal-body">
+
+                <!-- Current weather row -->
+                <div class="hm-weather-hero">
+                    <div class="hm-temp">32°C</div>
+                    <div class="hm-weather-details">
+                        <div class="hm-badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;">☁️ Partly Cloudy</div>
+                        <div style="margin-top:8px;font-size:0.85rem;color:var(--text-secondary);">
+                            💧 Humidity: <b style="color:#fff;">65%</b> &nbsp;·&nbsp;
+                            💨 Wind: <b style="color:#fff;">12 km/h (E)</b>
+                        </div>
+                        <div style="margin-top:4px;font-size:0.85rem;color:var(--text-secondary);">
+                            🌅 Sunrise: <b style="color:#fff;">6:04 AM</b> &nbsp;·&nbsp;
+                            🌇 Sunset: <b style="color:#fff;">6:48 PM</b>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5-day forecast -->
+                <div class="hm-section-label">5-Day Forecast</div>
+                <div class="hm-forecast-row">
+                    <div class="hm-day-card"><div>Today</div><div class="hm-day-icon">🌤️</div><div>32°C</div></div>
+                    <div class="hm-day-card"><div>Wed</div><div class="hm-day-icon">⛅</div><div>29°C</div></div>
+                    <div class="hm-day-card"><div>Thu</div><div class="hm-day-icon">🌧️</div><div>25°C</div></div>
+                    <div class="hm-day-card hm-alert-day"><div>Fri</div><div class="hm-day-icon">⛈️</div><div>22°C</div></div>
+                    <div class="hm-day-card"><div>Sat</div><div class="hm-day-icon">🌤️</div><div>30°C</div></div>
+                </div>
+
+                <!-- Farm advisories -->
+                <div class="hm-section-label">Crop Advisories</div>
+                <div class="hm-advisory-list">
+                    <div class="hm-advisory warning">
+                        <span class="hm-adv-icon">⚠️</span>
+                        <div>
+                            <b>Heavy rain expected in 48 hours</b>
+                            <p>Postpone neem oil spraying. Heavy rain will wash off pesticides before they take effect.</p>
+                        </div>
+                    </div>
+                    <div class="hm-advisory success">
+                        <span class="hm-adv-icon">✅</span>
+                        <div>
+                            <b>Good for soil testing &amp; sensor deployment</b>
+                            <p>Today's dry, mild conditions are ideal for field work and sensor recalibration.</p>
+                        </div>
+                    </div>
+                    <div class="hm-advisory info">
+                        <span class="hm-adv-icon">💧</span>
+                        <div>
+                            <b>Irrigation recommended</b>
+                            <p>Low soil moisture (62%). Irrigate Wheat fields in Zone 1 &amp; 2 before Thursday's rain.</p>
+                        </div>
+                    </div>
+                    <div class="hm-advisory info">
+                        <span class="hm-adv-icon">🌡️</span>
+                        <div>
+                            <b>High temperature alert for Cotton</b>
+                            <p>Temperature above 30°C increases Whitefly breeding. Increase monitoring frequency in Zone 5.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="home-modal-footer">
+                <button class="primary-btn" onclick="document.getElementById('nav-dashboard')?.click(); closeExistingModal();" style="flex:1;justify-content:center;">
+                    View Full Dashboard
+                </button>
+                <button class="pill-btn" onclick="closeExistingModal()" style="padding:10px 20px;">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    requestAnimationFrame(() => modal.classList.add('open'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeExistingModal(); });
+    document.getElementById('home-modal-close-btn')?.addEventListener('click', closeExistingModal);
+}
+
+// ── Govt. Schemes Modal ────────────────────────────────────────────────────
+function openSchemesModal() {
+    closeExistingModal();
+    const schemes = [
+        {
+            icon: '🏛️', color: '#60a5fa',
+            name: 'PM-Kisan Samman Nidhi',
+            status: 'Active',
+            statusColor: '#34d399',
+            desc: '13th installment released. Deadline for e-KYC extended to 30th May 2026.',
+            amount: '₹6,000 / year',
+            action: 'Check Status'
+        },
+        {
+            icon: '🚜', color: '#a78bfa',
+            name: 'Sub-Mission on Agricultural Mechanization (SMAM)',
+            status: 'Apply Now',
+            statusColor: '#fbbf24',
+            desc: 'Get up to 40% subsidy on buying new smart sensors, drones and tractors.',
+            amount: 'Up to 40% subsidy',
+            action: 'Apply'
+        },
+        {
+            icon: '💧', color: '#06b6d4',
+            name: 'Pradhan Mantri Krishi Sinchayee Yojana (PMKSY)',
+            status: 'Apply Now',
+            statusColor: '#fbbf24',
+            desc: 'Apply for micro-irrigation systems. Grant available for farms 5+ hectares.',
+            amount: 'Grant per hectare',
+            action: 'Apply'
+        },
+        {
+            icon: '🌾', color: '#34d399',
+            name: 'Fasal Bima Yojana (PMFBY)',
+            status: 'Enroll by May 31',
+            statusColor: '#f87171',
+            desc: 'Crop insurance at 2% premium for Kharif and 1.5% for Rabi crops. Protects against pest damage.',
+            amount: 'Market rate coverage',
+            action: 'Enroll'
+        },
+        {
+            icon: '🔬', color: '#fbbf24',
+            name: 'Soil Health Card Scheme',
+            status: 'Free',
+            statusColor: '#34d399',
+            desc: 'Free soil analysis every 2 years. Nutrient deficiency report + fertilizer recommendations.',
+            amount: 'Free of cost',
+            action: 'Request Card'
+        },
+    ];
+
+    const schemeHtml = schemes.map(s => `
+        <div class="hm-scheme-card">
+            <div class="hm-scheme-icon" style="color:${s.color};background:${s.color}22;">${s.icon}</div>
+            <div class="hm-scheme-info">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                    <h4 style="margin:0;font-size:0.9rem;font-weight:700;color:#fff;">${s.name}</h4>
+                    <span style="font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap;background:${s.statusColor}22;color:${s.statusColor};">${s.status}</span>
+                </div>
+                <p style="margin:4px 0 6px;font-size:0.8rem;color:var(--text-secondary);line-height:1.5;">${s.desc}</p>
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:0.78rem;font-weight:600;color:${s.color};">💰 ${s.amount}</span>
+                    <button onclick="showToast('success','${s.action} Initiated','You will be redirected to the official government portal.'); closeExistingModal();" style="font-size:0.72rem;padding:4px 12px;border-radius:6px;background:${s.color}22;border:1px solid ${s.color}44;color:${s.color};cursor:pointer;font-weight:600;">${s.action} →</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    const modal = document.createElement('div');
+    modal.id = 'home-modal-overlay';
+    modal.innerHTML = `
+        <div class="home-modal" id="home-modal-box" role="dialog" aria-modal="true">
+            <div class="home-modal-header">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:1.5rem;">🏛️</span>
+                    <div>
+                        <h3 style="margin:0;font-size:1.05rem;font-weight:700;">Government Schemes</h3>
+                        <p style="margin:0;font-size:0.75rem;color:var(--text-muted);">Active benefits for Lalan Singh · Punjab</p>
+                    </div>
+                </div>
+                <button class="home-modal-close" id="home-modal-close-btn">✕</button>
+            </div>
+            <div class="home-modal-body">
+                <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:10px;margin-bottom:16px;">
+                    <span>📞</span>
+                    <span style="font-size:0.82rem;color:var(--text-secondary);">KVK Helpline: <b style="color:#fff;">1800-180-1551</b> (Toll Free) · Agent: Ramesh Singh</span>
+                </div>
+                <div class="hm-scheme-list">${schemeHtml}</div>
+            </div>
+            <div class="home-modal-footer">
+                <button class="primary-btn" onclick="showToast('info','KVK Portal Opening','Redirecting to official Farmer Portal...'); closeExistingModal();" style="flex:1;justify-content:center;">
+                    🌐 Open Farmer Portal
+                </button>
+                <button class="pill-btn" onclick="closeExistingModal()" style="padding:10px 20px;">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    requestAnimationFrame(() => modal.classList.add('open'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeExistingModal(); });
+    document.getElementById('home-modal-close-btn')?.addEventListener('click', closeExistingModal);
+}
+
+function closeExistingModal() {
+    const existing = document.getElementById('home-modal-overlay');
+    if (existing) {
+        existing.classList.remove('open');
+        setTimeout(() => existing.remove(), 300);
+    }
+}
+
+// ── Modal CSS injected once ────────────────────────────────────────────────
+function injectHomeModalStyles() {
+    if (document.getElementById('home-modal-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'home-modal-styles';
+    style.textContent = `
+        #home-modal-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+            opacity: 0; transition: opacity 0.25s ease;
+        }
+        #home-modal-overlay.open { opacity: 1; }
+        .home-modal {
+            background: #111827;
+            border: 1px solid rgba(148,163,184,0.12);
+            border-radius: 20px;
+            width: 100%; max-width: 560px;
+            max-height: 85vh;
+            display: flex; flex-direction: column;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            overflow: hidden;
+        }
+        #home-modal-overlay.open .home-modal { transform: translateY(0); }
+        .home-modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 22px 16px;
+            border-bottom: 1px solid rgba(148,163,184,0.08);
+            flex-shrink: 0;
+        }
+        .home-modal-close {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-secondary); border-radius: 8px;
+            width: 32px; height: 32px; cursor: pointer; font-size: 0.85rem;
+            transition: all 0.15s; display:flex;align-items:center;justify-content:center;
+        }
+        .home-modal-close:hover { background: rgba(248,113,113,0.15); color: #f87171; border-color:#f87171; }
+        .home-modal-body {
+            padding: 20px 22px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .home-modal-footer {
+            display: flex; gap: 10px; align-items: center;
+            padding: 16px 22px; border-top: 1px solid rgba(148,163,184,0.08);
+            flex-shrink: 0;
+        }
+        /* Weather styles */
+        .hm-weather-hero {
+            display: flex; align-items: center; gap: 20px;
+            background: linear-gradient(135deg,rgba(251,191,36,0.08),rgba(6,182,212,0.06));
+            border: 1px solid rgba(251,191,36,0.15);
+            border-radius: 14px; padding: 18px 20px; margin-bottom: 18px;
+        }
+        .hm-temp { font-size: 3rem; font-weight: 900; color: #fff; line-height: 1; }
+        .hm-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.8rem; font-weight: 600;
+            padding: 4px 12px; border-radius: 20px;
+        }
+        .hm-section-label {
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--text-muted);
+            margin: 0 0 10px;
+        }
+        .hm-forecast-row {
+            display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto;
+        }
+        .hm-day-card {
+            flex: 1; min-width: 64px;
+            text-align: center; padding: 10px 8px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 10px;
+            font-size: 0.78rem; color: var(--text-secondary);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+        }
+        .hm-alert-day { border-color: rgba(248,113,113,0.3) !important; background: rgba(248,113,113,0.06) !important; }
+        .hm-day-icon { font-size: 1.3rem; }
+        .hm-advisory-list { display: flex; flex-direction: column; gap: 10px; }
+        .hm-advisory {
+            display: flex; gap: 12px; align-items: flex-start;
+            padding: 12px 14px; border-radius: 10px;
+        }
+        .hm-advisory.warning { background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.18); }
+        .hm-advisory.success { background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.18); }
+        .hm-advisory.info    { background: rgba(6,182,212,0.07);  border: 1px solid rgba(6,182,212,0.18); }
+        .hm-advisory b  { font-size: 0.85rem; color: #fff; display: block; margin-bottom: 3px; }
+        .hm-advisory p  { font-size: 0.78rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+        .hm-adv-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+        /* Schemes styles */
+        .hm-scheme-list { display: flex; flex-direction: column; gap: 12px; }
+        .hm-scheme-card {
+            display: flex; gap: 14px; align-items: flex-start;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        .hm-scheme-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.12); }
+        .hm-scheme-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; flex-shrink: 0;
+        }
+        .hm-scheme-info { flex: 1; }
+    `;
+    document.head.appendChild(style);
 }
