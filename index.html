@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CropGuard AI — Piezoelectric Insect Detection System</title>
-    <meta name="description" content="Smart agricultural monitoring system using piezoelectric sensors and ML-based insect detection to protect crops and notify farmers in real-time.">
+    <meta name="description"
+        content="Smart agricultural monitoring system using piezoelectric sensors and ML-based insect detection to protect crops and notify farmers in real-time.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
     <!-- Ambient Background -->
     <div class="ambient-bg">
@@ -24,19 +29,27 @@
             <div class="logo">
                 <div class="logo-icon">
                     <svg viewBox="0 0 40 40" fill="none">
-                        <circle cx="20" cy="20" r="18" stroke="url(#logoGrad)" stroke-width="2.5"/>
-                        <path d="M20 8 C20 8, 28 14, 28 22 C28 28, 24 32, 20 32 C16 32, 12 28, 12 22 C12 14, 20 8, 20 8Z" fill="url(#logoGrad)" opacity="0.3"/>
-                        <path d="M20 12 C20 12, 25 16, 25 21 C25 25, 23 28, 20 28 C17 28, 15 25, 15 21 C15 16, 20 12, 20 12Z" fill="url(#logoGrad)" opacity="0.6"/>
-                        <circle cx="20" cy="20" r="3" fill="url(#logoGrad)"/>
+                        <circle cx="20" cy="20" r="18" stroke="url(#logoGrad)" stroke-width="2.5" />
+                        <path
+                            d="M20 8 C20 8, 28 14, 28 22 C28 28, 24 32, 20 32 C16 32, 12 28, 12 22 C12 14, 20 8, 20 8Z"
+                            fill="url(#logoGrad)" opacity="0.3" />
+                        <path
+                            d="M20 12 C20 12, 25 16, 25 21 C25 25, 23 28, 20 28 C17 28, 15 25, 15 21 C15 16, 20 12, 20 12Z"
+                            fill="url(#logoGrad)" opacity="0.6" />
+                        <circle cx="20" cy="20" r="3" fill="url(#logoGrad)" />
                         <!-- Vibration waves -->
-                        <path d="M10 15 Q8 20 10 25" stroke="url(#logoGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
-                        <path d="M7 13 Q4 20 7 27" stroke="url(#logoGrad)" stroke-width="1.5" fill="none" opacity="0.3"/>
-                        <path d="M30 15 Q32 20 30 25" stroke="url(#logoGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
-                        <path d="M33 13 Q36 20 33 27" stroke="url(#logoGrad)" stroke-width="1.5" fill="none" opacity="0.3"/>
+                        <path d="M10 15 Q8 20 10 25" stroke="url(#logoGrad)" stroke-width="1.5" fill="none"
+                            opacity="0.5" />
+                        <path d="M7 13 Q4 20 7 27" stroke="url(#logoGrad)" stroke-width="1.5" fill="none"
+                            opacity="0.3" />
+                        <path d="M30 15 Q32 20 30 25" stroke="url(#logoGrad)" stroke-width="1.5" fill="none"
+                            opacity="0.5" />
+                        <path d="M33 13 Q36 20 33 27" stroke="url(#logoGrad)" stroke-width="1.5" fill="none"
+                            opacity="0.3" />
                         <defs>
                             <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
-                                <stop offset="0%" stop-color="#34d399"/>
-                                <stop offset="100%" stop-color="#06b6d4"/>
+                                <stop offset="0%" stop-color="#34d399" />
+                                <stop offset="100%" stop-color="#06b6d4" />
                             </linearGradient>
                         </defs>
                     </svg>
@@ -51,37 +64,37 @@
         <ul class="nav-links">
             <li class="nav-item active" data-page="dashboard" id="nav-dashboard">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="7" height="7" rx="1"/>
-                    <rect x="14" y="3" width="7" height="7" rx="1"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1"/>
-                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
                 </svg>
                 <span>Dashboard</span>
             </li>
             <li class="nav-item" data-page="zones" id="nav-zones">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                    <circle cx="12" cy="10" r="3" />
                 </svg>
                 <span>Zone Map</span>
             </li>
             <li class="nav-item" data-page="detection" id="nav-detection">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M2 12h4l3-9 4 18 3-9h4"/>
+                    <path d="M2 12h4l3-9 4 18 3-9h4" />
                 </svg>
                 <span>Detection</span>
             </li>
             <li class="nav-item" data-page="alerts" id="nav-alerts">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                    <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 01-3.46 0" />
                 </svg>
                 <span>Alerts</span>
                 <span class="badge" id="alert-badge">3</span>
             </li>
             <li class="nav-item" data-page="analytics" id="nav-analytics">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 20V10M12 20V4M6 20v-6"/>
+                    <path d="M18 20V10M12 20V4M6 20v-6" />
                 </svg>
                 <span>Analytics</span>
             </li>
@@ -106,9 +119,9 @@
             <div class="top-bar-left">
                 <button class="menu-toggle" id="menu-toggle">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="3" y1="6" x2="21" y2="6"/>
-                        <line x1="3" y1="12" x2="21" y2="12"/>
-                        <line x1="3" y1="18" x2="21" y2="18"/>
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
                     </svg>
                 </button>
                 <div class="page-title">
@@ -119,18 +132,19 @@
             <div class="top-bar-right">
                 <div class="search-bar" id="search-bar">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"/>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
                     </svg>
                     <input type="text" placeholder="Search zones, alerts..." id="search-input">
                 </div>
-                <button class="icon-btn language-btn" id="language-btn" title="Translate to Hindi / हिंदी में अनुवाद करें">
+                <button class="icon-btn language-btn" id="language-btn"
+                    title="Translate to Hindi / हिंदी में अनुवाद करें">
                     <span style="font-weight:bold; font-size:14px; display:block; line-height:1;">A/अ</span>
                 </button>
                 <button class="icon-btn notification-btn" id="notification-btn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                        <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 01-3.46 0" />
                     </svg>
                     <span class="notification-dot"></span>
                 </button>
@@ -147,15 +161,18 @@
                 <div class="stat-card" id="stat-sensors">
                     <div class="stat-icon sensors">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+                            <circle cx="12" cy="12" r="3" />
+                            <path
+                                d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
                         </svg>
                     </div>
                     <div class="stat-info">
                         <span class="stat-label">Active Sensors</span>
                         <span class="stat-value" id="active-sensors">24</span>
                         <span class="stat-change positive">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                            </svg>
                             +2 this week
                         </span>
                     </div>
@@ -164,14 +181,16 @@
                 <div class="stat-card" id="stat-detections">
                     <div class="stat-icon detections">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                         </svg>
                     </div>
                     <div class="stat-info">
                         <span class="stat-label">Detections Today</span>
                         <span class="stat-value" id="detections-today">17</span>
                         <span class="stat-change negative">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+                            </svg>
                             +5 vs yesterday
                         </span>
                     </div>
@@ -180,16 +199,19 @@
                 <div class="stat-card" id="stat-threats">
                     <div class="stat-icon threats">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                            <line x1="12" y1="9" x2="12" y2="13"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
                         </svg>
                     </div>
                     <div class="stat-info">
                         <span class="stat-label">Active Threats</span>
                         <span class="stat-value" id="active-threats">3</span>
                         <span class="stat-change warning">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
                             Requires attention
                         </span>
                     </div>
@@ -198,14 +220,16 @@
                 <div class="stat-card" id="stat-health">
                     <div class="stat-icon health">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                         </svg>
                     </div>
                     <div class="stat-info">
                         <span class="stat-label">Farm Health</span>
                         <span class="stat-value" id="farm-health">87%</span>
                         <span class="stat-change positive">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                            </svg>
                             +3% this week
                         </span>
                     </div>
@@ -318,7 +342,8 @@
                     <div class="card-body">
                         <div class="agri-updates-container">
                             <!-- Weather Widget -->
-                            <div class="weather-widget" style="display:flex; flex-direction:column; align-items:flex-start; justify-content:center;">
+                            <div class="weather-widget"
+                                style="display:flex; flex-direction:column; align-items:flex-start; justify-content:center;">
                                 <div style="display:flex; align-items:center; gap:16px;">
                                     <div class="weather-icon">🌤️</div>
                                     <div class="weather-info">
@@ -326,9 +351,13 @@
                                         <p>Wind Speed: 12 km/h (East). Humidity: 65%.</p>
                                     </div>
                                 </div>
-                                <div style="margin-top:16px; width:100%; padding-top:16px; border-top:1px solid var(--border-color);">
-                                    <p style="color:var(--accent-amber); font-weight:500; font-size:0.85rem; margin-bottom:6px;">⚠️ Heavy rain expected in 48 hours. Postpone neem oil spraying.</p>
-                                    <p style="color:var(--accent-green); font-weight:500; font-size:0.85rem;">✅ Good weather for soil testing and sensor deployment.</p>
+                                <div
+                                    style="margin-top:16px; width:100%; padding-top:16px; border-top:1px solid var(--border-color);">
+                                    <p
+                                        style="color:var(--accent-amber); font-weight:500; font-size:0.85rem; margin-bottom:6px;">
+                                        ⚠️ Heavy rain expected in 48 hours. Postpone neem oil spraying.</p>
+                                    <p style="color:var(--accent-green); font-weight:500; font-size:0.85rem;">✅ Good
+                                        weather for soil testing and sensor deployment.</p>
                                 </div>
                             </div>
                             <!-- Schemes Widget -->
@@ -385,7 +414,8 @@
                             <h2 id="zone-detail-title">Select a Zone</h2>
                         </div>
                         <div class="card-body" id="zone-detail-content">
-                            <p class="placeholder-text">Click on a zone to see detailed sensor data, vibration patterns, and detection history.</p>
+                            <p class="placeholder-text">Click on a zone to see detailed sensor data, vibration patterns,
+                                and detection history.</p>
                         </div>
                     </div>
                 </div>
@@ -407,8 +437,9 @@
                             <div class="classifier-result" id="classifier-result">
                                 <div class="result-icon warning">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-                                        <path d="M12 8v4M12 16h.01"/>
+                                        <path
+                                            d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                                        <path d="M12 8v4M12 16h.01" />
                                     </svg>
                                 </div>
                                 <div class="result-info">
@@ -481,7 +512,9 @@
                         <button class="filter-btn" data-filter="info" id="filter-info">Info</button>
                     </div>
                     <button class="primary-btn" id="mark-all-read">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
                         Mark All Read
                     </button>
                 </div>
@@ -564,14 +597,17 @@
         <div class="profile-panel-header">
             <h3>Farmer Profile</h3>
             <button class="icon-btn" id="close-profile">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
             </button>
         </div>
         <div class="profile-content">
             <div class="profile-avatar-large">LS</div>
             <h2 class="profile-name">Lalan Singh</h2>
             <p class="profile-contact">+91 98765 43210</p>
-            
+
             <div class="profile-section">
                 <h4>Farm Details</h4>
                 <div class="profile-row"><span>Total Area:</span> 12 Hectares</div>
@@ -591,11 +627,14 @@
                 <div class="profile-row"><span>Local KVK Agent:</span> Ramesh Singh</div>
                 <div class="profile-row"><span>KVK Contact:</span> 1800-180-1551 (Toll Free)</div>
             </div>
-            
-            <button class="pill-btn logout-btn" style="margin-top:20px; width:100%; justify-content:center; background:var(--accent-red-dim); color:var(--accent-red);">Sign Out</button>
+
+            <button class="pill-btn logout-btn"
+                style="margin-top:20px; width:100%; justify-content:center; background:var(--accent-red-dim); color:var(--accent-red);">Sign
+                Out</button>
         </div>
     </div>
 
     <script src="app.js?v=2"></script>
 </body>
+
 </html>

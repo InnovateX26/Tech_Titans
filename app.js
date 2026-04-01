@@ -2,7 +2,7 @@
 
 // Polyfill for roundRect (older browsers)
 if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
-    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, radii) {
         if (!Array.isArray(radii)) radii = [radii, radii, radii, radii];
         const [tl, tr, br, bl] = radii.map(r => Math.min(r, w / 2, h / 2));
         this.moveTo(x + tl, y);
@@ -55,27 +55,27 @@ const PEST_TYPES = [
 ];
 
 const ZONES = [
-    { id: 'A1', name: 'Zone A1', crop: 'Wheat', sensors: 3, health: 95, status: 'healthy' },
-    { id: 'A2', name: 'Zone A2', crop: 'Wheat', sensors: 2, health: 88, status: 'healthy' },
-    { id: 'A3', name: 'Zone A3', crop: 'Rice', sensors: 3, health: 72, status: 'warning' },
-    { id: 'A4', name: 'Zone A4', crop: 'Rice', sensors: 2, health: 91, status: 'healthy' },
-    { id: 'B1', name: 'Zone B1', crop: 'Cotton', sensors: 2, health: 45, status: 'critical' },
-    { id: 'B2', name: 'Zone B2', crop: 'Cotton', sensors: 3, health: 83, status: 'healthy' },
-    { id: 'B3', name: 'Zone B3', crop: 'Sugarcane', sensors: 2, health: 67, status: 'warning' },
-    { id: 'B4', name: 'Zone B4', crop: 'Sugarcane', sensors: 2, health: 90, status: 'healthy' },
-    { id: 'C1', name: 'Zone C1', crop: 'Maize', sensors: 2, health: 94, status: 'healthy' },
-    { id: 'C2', name: 'Zone C2', crop: 'Maize', sensors: 1, health: 58, status: 'critical' },
-    { id: 'C3', name: 'Zone C3', crop: 'Soybean', sensors: 2, health: 86, status: 'healthy' },
-    { id: 'C4', name: 'Zone C4', crop: 'Soybean', sensors: 1, health: 79, status: 'warning' },
+    { id: '1', name: 'Zone 1', crop: 'Wheat', sensors: 3, health: 95, status: 'healthy' },
+    { id: '2', name: 'Zone 2', crop: 'Wheat', sensors: 2, health: 88, status: 'healthy' },
+    { id: '3', name: 'Zone 3', crop: 'Rice', sensors: 3, health: 72, status: 'warning' },
+    { id: '4', name: 'Zone 4', crop: 'Rice', sensors: 2, health: 91, status: 'healthy' },
+    { id: '5', name: 'Zone 5', crop: 'Cotton', sensors: 2, health: 45, status: 'critical' },
+    { id: '6', name: 'Zone 6', crop: 'Cotton', sensors: 3, health: 83, status: 'healthy' },
+    { id: '7', name: 'Zone 7', crop: 'Sugarcane', sensors: 2, health: 67, status: 'warning' },
+    { id: '8', name: 'Zone 8', crop: 'Sugarcane', sensors: 2, health: 90, status: 'healthy' },
+    { id: '9', name: 'Zone 9', crop: 'Maize', sensors: 2, health: 94, status: 'healthy' },
+    { id: '10', name: 'Zone 10', crop: 'Maize', sensors: 1, health: 58, status: 'critical' },
+    { id: '11', name: 'Zone 11', crop: 'Soybean', sensors: 2, health: 86, status: 'healthy' },
+    { id: '12', name: 'Zone 12', crop: 'Soybean', sensors: 1, health: 79, status: 'warning' },
 ];
 
 const ALERTS_DATA = [
     {
         id: 1,
         type: 'critical',
-        title: 'Stem Borer Infestation Detected — Zone B1',
-        description: 'Piezoelectric sensors in Zone B1 detected persistent high-frequency vibrations (2.4kHz–3.8kHz) consistent with Stem Borer larval activity. ML model classified with 96.8% confidence. Immediate intervention recommended.',
-        zone: 'B1',
+        title: 'Stem Borer Infestation Detected — Zone 5',
+        description: 'Piezoelectric sensors in Zone 5 detected persistent high-frequency vibrations (2.4kHz–3.8kHz) consistent with Stem Borer larval activity. ML model classified with 96.8% confidence. Immediate intervention recommended.',
+        zone: '5',
         time: '12 min ago',
         read: false,
         pest: 'Stem Borer',
@@ -84,9 +84,9 @@ const ALERTS_DATA = [
     {
         id: 2,
         type: 'critical',
-        title: 'Whitefly Population Surge — Zone C2',
-        description: 'Unusual vibration pattern detected across 3 sensors in Zone C2. Frequency analysis matches Whitefly wing-beat signature. Population density estimated at 85 per leaf. Risk of Yellowing Disease transmission is high.',
-        zone: 'C2',
+        title: 'Whitefly Population Surge — Zone 10',
+        description: 'Unusual vibration pattern detected across 3 sensors in Zone 10. Frequency analysis matches Whitefly wing-beat signature. Population density estimated at 85 per leaf. Risk of Yellowing Disease transmission is high.',
+        zone: '10',
         time: '28 min ago',
         read: false,
         pest: 'Whitefly',
@@ -95,9 +95,9 @@ const ALERTS_DATA = [
     {
         id: 3,
         type: 'warning',
-        title: 'Aphid Activity Increasing — Zone A3',
-        description: 'Low-frequency vibration anomalies detected in Zone A3 sensors. Pattern matches early-stage Aphid colony formation. Current confidence: 82.1%. Monitoring recommended — may escalate in 24–48 hours.',
-        zone: 'A3',
+        title: 'Aphid Activity Increasing — Zone 3',
+        description: 'Low-frequency vibration anomalies detected in Zone 3 sensors. Pattern matches early-stage Aphid colony formation. Current confidence: 82.1%. Monitoring recommended — may escalate in 24–48 hours.',
+        zone: '3',
         time: '1 hour ago',
         read: false,
         pest: 'Aphid',
@@ -106,9 +106,9 @@ const ALERTS_DATA = [
     {
         id: 4,
         type: 'warning',
-        title: 'Thrip Vibration Pattern — Zone B3',
-        description: 'Intermittent micro-vibrations in Zone B3 match thrip feeding patterns. Confidence: 78.4%. No visible crop damage yet. Continue monitoring.',
-        zone: 'B3',
+        title: 'Thrip Vibration Pattern — Zone 7',
+        description: 'Intermittent micro-vibrations in Zone 7 match thrip feeding patterns. Confidence: 78.4%. No visible crop damage yet. Continue monitoring.',
+        zone: '7',
         time: '2 hours ago',
         read: true,
         pest: 'Thrips',
@@ -117,18 +117,18 @@ const ALERTS_DATA = [
     {
         id: 5,
         type: 'info',
-        title: 'Sensor Calibration Complete — Zone A1',
-        description: 'All 3 piezoelectric sensors in Zone A1 have been recalibrated. Sensitivity improved by 12%. New baseline vibration thresholds applied.',
-        zone: 'A1',
+        title: 'Sensor Calibration Complete — Zone 1',
+        description: 'All 3 piezoelectric sensors in Zone 1 have been recalibrated. Sensitivity improved by 12%. New baseline vibration thresholds applied.',
+        zone: '1',
         time: '3 hours ago',
         read: true,
     },
     {
         id: 6,
         type: 'warning',
-        title: 'Spider Mite Indicators — Zone C4',
+        title: 'Spider Mite Indicators — Zone 12',
         description: 'Sensors detecting characteristic low-amplitude high-frequency patterns associated with spider mite activity. Confidence rising — currently at 73.9%.',
-        zone: 'C4',
+        zone: '12',
         time: '4 hours ago',
         read: true,
         pest: 'Spider Mite',
@@ -231,10 +231,10 @@ function generateVibrationPoint() {
     vibrationStep++;
     const zoneSelect = document.getElementById('vibration-zone-select');
     const zone = zoneSelect ? zoneSelect.value : 'all';
-    
+
     let base, noise, spike;
     const s = vibrationStep;
-    
+
     if (zone === 'all') {
         // Default generic mix
         base = Math.sin(s / 5) * 20;
@@ -317,7 +317,7 @@ function drawVibrationChart() {
 
     if (zone === 'zone-a' || zone === 'zone-d') {
         // Critical Zones
-        colorRgb = '248, 113, 113'; 
+        colorRgb = '248, 113, 113';
         colorHex = '#f87171';
         colorGradientEnd = '#ef4444';
     } else if (zone === 'zone-b') {
@@ -492,8 +492,8 @@ function renderSpectrogram() {
             const freq = y / rows;
             const time = x / cols;
             const intensity = Math.sin(freq * 12 + time * 8) * 0.3 +
-                             Math.sin(freq * 5 - time * 3) * 0.2 +
-                             Math.random() * 0.15;
+                Math.sin(freq * 5 - time * 3) * 0.2 +
+                Math.random() * 0.15;
 
             const band1 = Math.exp(-Math.pow(freq - 0.3, 2) / 0.01) * Math.sin(time * 15) * 0.5;
             const band2 = Math.exp(-Math.pow(freq - 0.6, 2) / 0.015) * Math.cos(time * 10) * 0.4;
@@ -617,11 +617,84 @@ function renderSpeciesChart() {
 }
 
 // ===== ZONE MAP =====
+const ZONE_SHAPES = {
+    '1': '100,50 300,70 280,210 80,180',
+    '2': '300,70 500,50 520,190 280,210',
+    '3': '500,50 700,80 680,220 520,190',
+    '4': '700,80 900,60 920,200 680,220',
+    '5': '80,180 280,210 260,380 40,350',
+    '6': '280,210 520,190 540,360 260,380',
+    '7': '520,190 680,220 700,390 540,360',
+    '8': '680,220 920,200 940,370 700,390',
+    '9': '40,350 260,380 240,580 20,550',
+    '10': '260,380 540,360 560,600 240,580',
+    '11': '540,360 700,390 720,610 560,600',
+    '12': '700,390 940,370 960,570 720,610'
+};
+
+const getZoneColor = (status, opacity) => {
+    if (status === 'critical') return `rgba(248, 113, 113, ${opacity})`;
+    if (status === 'warning') return `rgba(251, 191, 36, ${opacity})`;
+    return `rgba(52, 211, 153, ${opacity})`;
+};
+const getZoneStroke = (status) => {
+    if (status === 'critical') return '#f87171';
+    if (status === 'warning') return '#fbbf24';
+    return '#34d399';
+};
+
 function initZoneMap() {
     const map = document.getElementById('farm-map');
     if (!map) return;
 
-    map.innerHTML = ZONES.map(zone => {
+    map.style.display = 'block'; // Override default CSS grid
+    
+    // Create big SVG Map
+    const bigMapPolys = ZONES.map(z => {
+        const shape = ZONE_SHAPES[z.id];
+        const fill = getZoneColor(z.status, 0.15);
+        const stroke = getZoneStroke(z.status);
+        
+        const pts = shape.split(' ').map(p => p.split(',').map(Number));
+        const cx = (pts[0][0] + pts[1][0] + pts[2][0] + pts[3][0]) / 4;
+        const cy = (pts[0][1] + pts[1][1] + pts[2][1] + pts[3][1]) / 4;
+
+        return `
+           <g class="interactive-polygon" data-zone-id="${z.id}" style="cursor:pointer; transition:all 0.3s ease;">
+               <polygon points="${shape}" fill="${fill}" stroke="${stroke}" stroke-width="2" />
+               <text x="${cx}" y="${cy}" fill="#fff" font-size="24" font-family="monospace" text-anchor="middle" font-weight="bold" pointer-events="none">${z.id}</text>
+               <text x="${cx}" y="${cy+24}" fill="${stroke}" font-size="12" font-family="sans-serif" text-anchor="middle" pointer-events="none">${z.status.toUpperCase()}</text>
+           </g>
+        `;
+    }).join('');
+
+    const bigFarmSVG = `
+       <style>
+          .interactive-polygon:hover polygon {
+              fill: rgba(255,255,255,0.2) !important;
+              stroke-width: 4px;
+              filter: drop-shadow(0 0 8px rgba(255,255,255,0.5));
+          }
+       </style>
+       <div style="width:100%; margin-bottom: 24px; position:relative;">
+           <div style="padding:12px 16px; background:rgba(0,0,0,0.4); border-radius:12px 12px 0 0; font-weight:600; color:#fff; border:1px solid rgba(255,255,255,0.1); border-bottom:none; display:flex; justify-content:space-between;">
+               <span>Live Geographic Farm Layout</span>
+               <span style="color:var(--text-muted); font-size:0.85rem; font-weight:normal;">12 Active Sectors</span>
+           </div>
+           <svg viewBox="0 0 1000 650" width="100%" height="auto" style="background: radial-gradient(circle at center, #111a2e, #0a0e17); border-radius: 0 0 12px 12px; border:1px solid rgba(255,255,255,0.1);">
+              <defs>
+                 <pattern id="grid_big" width="60" height="60" patternUnits="userSpaceOnUse">
+                     <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="1" />
+                 </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid_big)" />
+              <g id="farm-svg-group">${bigMapPolys}</g>
+           </svg>
+       </div>
+    `;
+
+    // Create conventional cards listing below map
+    const cardsHtml = ZONES.map(zone => {
         const vibBars = Array.from({ length: 4 }, (_, i) =>
             `<div class="zone-vibration-bar" style="animation-delay:${i * 0.15}s"></div>`
         ).join('');
@@ -641,13 +714,25 @@ function initZoneMap() {
         `;
     }).join('');
 
-    // Click handlers
-    map.querySelectorAll('.farm-zone').forEach(el => {
-        el.addEventListener('click', () => {
-            map.querySelectorAll('.farm-zone').forEach(z => z.classList.remove('selected'));
-            el.classList.add('selected');
-            showZoneDetails(el.dataset.zoneId);
-        });
+    map.innerHTML = `
+        ${bigFarmSVG}
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+            ${cardsHtml}
+        </div>
+    `;
+
+    // Click handlers for Map Polygons AND Cards
+    const triggerZoneSelect = (el) => {
+        const zoneId = el.dataset.zoneId;
+        // Reset visual selections
+        map.querySelectorAll('.farm-zone, .interactive-polygon').forEach(z => z.classList.remove('selected'));
+        // Highlight active elements
+        map.querySelectorAll(`[data-zone-id="${zoneId}"]`).forEach(z => z.classList.add('selected'));
+        showZoneDetails(zoneId);
+    };
+
+    map.querySelectorAll('.farm-zone, .interactive-polygon').forEach(el => {
+        el.addEventListener('click', () => triggerZoneSelect(el));
     });
 }
 
@@ -658,10 +743,10 @@ function showZoneDetails(zoneId) {
     const title = document.getElementById('zone-detail-title');
     const content = document.getElementById('zone-detail-content');
 
-    title.textContent = zone.name;
+    title.textContent = `Zone Analytics: ${zone.name}`;
 
     const sensors = Array.from({ length: zone.sensors }, (_, i) => {
-        const online = Math.random() > 0.1;
+        const online = Math.random() > 0.05;
         return `
             <div class="zone-sensor-item">
                 <span class="zone-sensor-id">PZS-${zone.id}-${String(i + 1).padStart(2, '0')}</span>
@@ -671,9 +756,95 @@ function showZoneDetails(zoneId) {
     }).join('');
 
     const threatPest = PEST_TYPES[Math.floor(Math.random() * PEST_TYPES.length)];
+    const isCritical = zone.status === 'critical';
+    const isWarning = zone.status === 'warning';
+    const glowColor = getZoneStroke(zone.status);
+
+    // Render localized sector highlight showing the absolute shape relative to the rest of the farm
+    const detailMapPolys = ZONES.map(z => {
+        const shape = ZONE_SHAPES[z.id];
+        const isTarget = z.id === zoneId;
+        const fill = isTarget ? getZoneColor(z.status, 0.45) : 'rgba(255,255,255,0.02)';
+        const stroke = isTarget ? getZoneStroke(z.status) : 'rgba(255,255,255,0.1)';
+        const strokeWidth = isTarget ? 3 : 1;
+
+        let extraGraphics = '';
+        if (isTarget) {
+            const pts = shape.split(' ').map(p => p.split(',').map(Number));
+            const cx = (pts[0][0] + pts[1][0] + pts[2][0] + pts[3][0]) / 4;
+            const cy = (pts[0][1] + pts[1][1] + pts[2][1] + pts[3][1]) / 4;
+            
+            // Add pulse alarm if problem detected
+            if (isCritical || isWarning) {
+                extraGraphics += `
+                    <circle cx="${cx}" cy="${cy}" r="30" fill="none" stroke="${stroke}" opacity="0.6" stroke-width="3">
+                        <animate attributeName="r" values="10; 90" dur="2s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0.8; 0" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                `;
+            }
+
+            // Scatter mock sensor dots inside the active polygon
+            for(let i=0; i<zone.sensors; i++) {
+                const px = cx + (Math.sin(i*10)*40);
+                const py = cy + (Math.cos(i*10)*40);
+                extraGraphics += `<circle cx="${px}" cy="${py}" r="6" fill="#fff" stroke="${stroke}" stroke-width="2"/>`;
+            }
+            
+            extraGraphics += `<text x="${cx}" y="${cy}" fill="#fff" font-size="34" font-family="sans-serif" text-anchor="middle" font-weight="bold">${z.id}</text>`;
+        }
+
+        return `
+           <g>
+               <polygon points="${shape}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" />
+               ${extraGraphics}
+           </g>
+        `;
+    }).join('');
+
+    const zoneMapSVG = `
+        <div style="width: 100%; height: 220px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 20px; overflow: hidden; position: relative; background: #05080f; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+            <svg viewBox="0 0 1000 650" width="100%" height="100%">
+                ${detailMapPolys}
+            </svg>
+            <div style="position: absolute; top: 12px; left: 16px; font-size: 11px; font-weight: bold; color: #fff; display: flex; align-items: center;">
+                 <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${glowColor};margin-right:6px;box-shadow:0 0 8px ${glowColor}"></span>
+                 SECTOR TOPOGRAPHY: ${zone.id}
+            </div>
+            <div style="position: absolute; bottom: 8px; right: 8px; font-size: 10px; color: ${glowColor}; font-family: monospace; background: rgba(0,0,0,0.6); padding: 3px 8px; border-radius: 4px; border: 1px solid ${glowColor}40">COORD: ${Math.random().toFixed(2)} N, ${Math.random().toFixed(2)} E</div>
+        </div>
+    `;
+
+    let problemSection = '';
+    if (isCritical || isWarning) {
+        problemSection = `
+            <div style="padding: 12px; background: rgba(248, 113, 113, 0.05); border: 1px solid rgba(248, 113, 113, 0.2); border-radius: 8px; margin-bottom: 16px;">
+                <div style="font-size:0.85rem; font-weight: 600; color: #f87171; display:flex; align-items:center; margin-bottom: 6px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    Detected Problem
+                </div>
+                <div style="font-size:0.8rem; color: #cbd5e1; margin-bottom: 4px;">Primary Threat: <span style="color: #fbbf24; font-weight:500;">${threatPest.name}</span> (${threatPest.disease})</div>
+                <div style="font-size:0.75rem; color: #94a3b8;">Status: ${zone.status === 'critical' ? 'Immediate intervention required due to high insect detection frequency.' : 'Elevated vibration anomalies detected. Keep monitoring.'}</div>
+            </div>
+        `;
+    } else {
+        problemSection = `
+            <div style="padding: 12px; background: rgba(52, 211, 153, 0.05); border: 1px solid rgba(52, 211, 153, 0.2); border-radius: 8px; margin-bottom: 16px;">
+                <div style="font-size:0.85rem; font-weight: 600; color: #34d399; display:flex; align-items:center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    Zone is Healthy
+                </div>
+                <div style="font-size:0.75rem; color: #94a3b8; margin-top: 4px;">No significant threats detected. All sensor nodes reporting baseline patterns.</div>
+            </div>
+        `;
+    }
 
     content.innerHTML = `
-        <div class="zone-detail-stats">
+        ${zoneMapSVG}
+        
+        ${problemSection}
+
+        <div class="zone-detail-stats" style="margin-bottom: 16px;">
             <div class="zone-detail-stat">
                 <span class="zone-detail-stat-value" style="color: ${zone.health > 80 ? 'var(--accent-green)' : zone.health > 60 ? 'var(--accent-amber)' : 'var(--accent-red)'}">${zone.health}%</span>
                 <span class="zone-detail-stat-label">Health Score</span>
@@ -691,11 +862,8 @@ function showZoneDetails(zoneId) {
                 <span class="zone-detail-stat-label">Avg Frequency</span>
             </div>
         </div>
-        <div style="margin-bottom:14px">
-            <div style="font-size:0.82rem;font-weight:600;margin-bottom:8px">Crop: ${zone.crop}</div>
-            <div style="font-size:0.78rem;color:var(--text-secondary)">Primary Threat: <span style="color:var(--accent-amber)">${threatPest.name}</span> → ${threatPest.disease}</div>
-        </div>
-        <div style="font-size:0.82rem;font-weight:600;margin-bottom:8px">Sensor Array</div>
+        
+        <div style="font-size:0.82rem;font-weight:600;margin-bottom:8px; color: #fff;">Sensor Array Status</div>
         <div class="zone-sensor-list">${sensors}</div>
     `;
 }
@@ -783,16 +951,16 @@ const REMEDIES = {
     }
 };
 
-window.toggleRemedy = function(id, disease) {
+window.toggleRemedy = function (id, disease) {
     const remedyDiv = document.getElementById(`remedy-${id}`);
     if (!remedyDiv) return;
-    
+
     if (remedyDiv.style.display === 'none' || !remedyDiv.style.display) {
         const lang = isHindi ? 'hi' : 'en';
-        const remedyText = (REMEDIES[disease] && REMEDIES[disease][lang]) ? 
-            REMEDIES[disease][lang] : 
+        const remedyText = (REMEDIES[disease] && REMEDIES[disease][lang]) ?
+            REMEDIES[disease][lang] :
             (isHindi ? "उपचार के लिए निकटतम कृषि विशेषज्ञ से संपर्क करें।" : "Contact nearest agricultural expert for treatment.");
-            
+
         remedyDiv.innerHTML = `<strong>${isHindi ? "अनुशंसित उपाय:" : "Recommended Remedy:"}</strong><br/><span style="margin-top:4px; display:block;">${remedyText}</span>`;
         remedyDiv.style.display = 'block';
     } else {
@@ -855,7 +1023,7 @@ function renderAlerts(filter) {
             <div class="alert-time">${a.time}</div>
         </div>
     `).join('');
-    
+
     // Automatically apply hindi translation to newly rendered alerts if hindi mode is active
     if (isHindi) {
         translateDOM(document.getElementById('alerts-list'));
@@ -872,11 +1040,83 @@ function updateAlertBadge() {
 }
 
 // ===== ANALYTICS =====
+let trendHoverIndex = null;
+let currentTrendData = [];
+let trendChartType = '7d';
+
 function initAnalytics() {
-    // Render on first view
+    // Bind the time range buttons
+    const rangeBtns = document.querySelectorAll('.analytics-trend-card .pill-btn');
+    rangeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            rangeBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            trendChartType = btn.dataset.range;
+            generateTrendData();
+            renderTrendChart();
+        });
+    });
+
+    const canvas = document.getElementById('trend-canvas');
+    if (canvas) {
+        // Handle Hover Interactions
+        canvas.addEventListener('mousemove', (e) => {
+            if (currentTrendData.length === 0) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const w = canvas.clientWidth;
+            const padding = { left: 50, right: 30 };
+            const chartW = w - padding.left - padding.right;
+            
+            // Map X coordinate to data index
+            let ratio = (x - padding.left) / chartW;
+            ratio = Math.max(0, Math.min(1, ratio));
+            const idx = Math.round(ratio * (currentTrendData.length - 1));
+            
+            if (trendHoverIndex !== idx) {
+                trendHoverIndex = idx;
+                renderTrendChart(); // Redraw with tooltip
+            }
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+            trendHoverIndex = null;
+            renderTrendChart();
+        });
+    }
+
+    generateTrendData();
+}
+
+function generateTrendData() {
+    let points = 7;
+    let daysLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    
+    if (trendChartType === '30d') {
+        points = 15;
+        daysLabels = Array.from({length: 15}, (_, i) => `D-${30 - i*2}`);
+    } else if (trendChartType === '90d') {
+        points = 12;
+        daysLabels = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11', 'W12'];
+    }
+
+    currentTrendData = [];
+    for(let i=0; i<points; i++) {
+        // Generate realistic looking data based on the type
+        const mult = trendChartType === '30d' ? 2 : trendChartType === '90d' ? 5 : 1;
+        const d = Math.floor((15 + Math.random() * 25 + Math.sin(i)*10) * mult);
+        const t = Math.floor((d * 0.15 + (Math.random() - 0.5) * 5) * mult);
+        
+        currentTrendData.push({
+            label: daysLabels[i],
+            detection: d,
+            threat: Math.max(0, t),
+        });
+    }
 }
 
 function renderAnalytics() {
+    if (currentTrendData.length === 0) generateTrendData();
     renderTrendChart();
     renderDistributionChart();
     renderHeatmap();
@@ -885,7 +1125,7 @@ function renderAnalytics() {
 
 function renderTrendChart() {
     const canvas = document.getElementById('trend-canvas');
-    if (!canvas) return;
+    if (!canvas || currentTrendData.length === 0) return;
 
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
@@ -897,113 +1137,222 @@ function renderTrendChart() {
     canvas.height = h * dpr;
     ctx.scale(dpr, dpr);
 
-    const padding = { top: 20, right: 20, bottom: 40, left: 50 };
+    const padding = { top: 30, right: 30, bottom: 40, left: 50 };
     const chartW = w - padding.left - padding.right;
     const chartH = h - padding.top - padding.bottom;
 
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const detections = [12, 18, 8, 22, 15, 9, 17];
-    const threats = [2, 4, 1, 5, 3, 1, 3];
-    const maxVal = Math.max(...detections) + 5;
+    // Clear canvas
+    ctx.clearRect(0, 0, w, h);
 
-    // Grid
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.06)';
+    const maxVal = Math.max(...currentTrendData.map(d => d.detection)) * 1.2;
+
+    // 1. Draw Grid
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.lineWidth = 1;
-    for (let i = 0; i <= 5; i++) {
-        const y = padding.top + (chartH / 5) * i;
+    for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartH / 4) * i;
         ctx.beginPath();
+        if (i === 4) ctx.setLineDash([]); // solid bottom
+        else ctx.setLineDash([4, 4]); // dashed grid
         ctx.moveTo(padding.left, y);
         ctx.lineTo(w - padding.right, y);
         ctx.stroke();
 
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.4)';
-        ctx.font = '10px "JetBrains Mono"';
+        // Y-Axis labels
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.font = '10px monospace';
         ctx.textAlign = 'right';
-        ctx.fillText(Math.round(maxVal - (maxVal / 5) * i), padding.left - 8, y + 4);
+        ctx.fillText(Math.round(maxVal - (maxVal / 4) * i), padding.left - 10, y + 4);
     }
 
-    // Day labels
-    days.forEach((d, i) => {
-        const x = padding.left + (i / (days.length - 1)) * chartW;
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
-        ctx.font = '11px Inter';
+    // X-Axis labels
+    currentTrendData.forEach((d, i) => {
+        const x = padding.left + (i / (currentTrendData.length - 1)) * chartW;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.font = '10px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText(d, x, h - 10);
+        
+        // Show fewer labels if too many points
+        if (currentTrendData.length > 10 && i % 2 !== 0 && i !== currentTrendData.length - 1) return;
+        ctx.fillText(d.label, x, h - 15);
     });
 
-    function drawLine(data, color, fillColor) {
+    // 2. Helper to draw glowing bezier paths
+    function drawGlowingPath(key, areaColor, lineColor, glowColor, zIndex) {
         ctx.beginPath();
-        data.forEach((val, i) => {
-            const x = padding.left + (i / (data.length - 1)) * chartW;
-            const y = padding.top + (1 - val / maxVal) * chartH;
+        currentTrendData.forEach((d, i) => {
+            const x = padding.left + (i / (currentTrendData.length - 1)) * chartW;
+            const y = padding.top + (1 - d[key] / maxVal) * chartH;
             if (i === 0) ctx.moveTo(x, y);
             else {
-                const prevX = padding.left + ((i - 1) / (data.length - 1)) * chartW;
-                const prevY = padding.top + (1 - data[i - 1] / maxVal) * chartH;
+                const prevX = padding.left + ((i - 1) / (currentTrendData.length - 1)) * chartW;
+                const prevY = padding.top + (1 - currentTrendData[i - 1][key] / maxVal) * chartH;
                 const cpx = (prevX + x) / 2;
                 ctx.bezierCurveTo(cpx, prevY, cpx, y, x, y);
             }
         });
 
-        if (fillColor) {
+        // Fill area
+        if (areaColor) {
             const lastX = padding.left + chartW;
             const lastY = padding.top + chartH;
             ctx.lineTo(lastX, lastY);
             ctx.lineTo(padding.left, lastY);
             ctx.closePath();
-            const grad = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
-            grad.addColorStop(0, fillColor);
+            
+            const grad = ctx.createLinearGradient(0, padding.top, 0, lastY);
+            grad.addColorStop(0, areaColor);
             grad.addColorStop(1, 'transparent');
             ctx.fillStyle = grad;
             ctx.fill();
         }
 
+        // Draw Line over it
         ctx.beginPath();
-        data.forEach((val, i) => {
-            const x = padding.left + (i / (data.length - 1)) * chartW;
-            const y = padding.top + (1 - val / maxVal) * chartH;
+        currentTrendData.forEach((d, i) => {
+            const x = padding.left + (i / (currentTrendData.length - 1)) * chartW;
+            const y = padding.top + (1 - d[key] / maxVal) * chartH;
             if (i === 0) ctx.moveTo(x, y);
             else {
-                const prevX = padding.left + ((i - 1) / (data.length - 1)) * chartW;
-                const prevY = padding.top + (1 - data[i - 1] / maxVal) * chartH;
+                const prevX = padding.left + ((i - 1) / (currentTrendData.length - 1)) * chartW;
+                const prevY = padding.top + (1 - currentTrendData[i - 1][key] / maxVal) * chartH;
                 const cpx = (prevX + x) / 2;
                 ctx.bezierCurveTo(cpx, prevY, cpx, y, x, y);
             }
         });
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
 
-        data.forEach((val, i) => {
-            const x = padding.left + (i / (data.length - 1)) * chartW;
-            const y = padding.top + (1 - val / maxVal) * chartH;
-            ctx.beginPath();
-            ctx.arc(x, y, 4, 0, Math.PI * 2);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(x, y, 6, 0, Math.PI * 2);
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-        });
+        ctx.strokeStyle = lineColor;
+        ctx.lineWidth = 3;
+        
+        // Add huge neon glow
+        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+        
+        // Reset shadow
+        ctx.shadowBlur = 0;
     }
 
-    drawLine(detections, '#34d399', 'rgba(52, 211, 153, 0.1)');
-    drawLine(threats, '#f87171', 'rgba(248, 113, 113, 0.08)');
+    // Draw the chart paths
+    drawGlowingPath('detection', 'rgba(0, 246, 255, 0.4)', '#00f6ff', '#00f6ff'); // Cyan
+    drawGlowingPath('threat', 'rgba(255, 42, 95, 0.4)', '#ff2a5f', '#ff2a5f'); // Neon Red
 
-    // Legend
-    ctx.fillStyle = '#34d399';
-    ctx.fillRect(w - 190, 8, 12, 3);
-    ctx.fillStyle = 'rgba(241, 245, 249, 0.7)';
-    ctx.font = '11px Inter';
+    // 3. Hover Interactions (Crosshair & Tooltip)
+    if (trendHoverIndex !== null) {
+        const hoverPoint = currentTrendData[trendHoverIndex];
+        const hx = padding.left + (trendHoverIndex / (currentTrendData.length - 1)) * chartW;
+        
+        // Vertical dashed line
+        ctx.beginPath();
+        ctx.setLineDash([4, 4]);
+        ctx.moveTo(hx, padding.top);
+        ctx.lineTo(hx, padding.top + chartH);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Interactive dots
+        function drawHoverDot(val, highlightColor) {
+            const hy = padding.top + (1 - val / maxVal) * chartH;
+            ctx.beginPath();
+            ctx.arc(hx, hy, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#0a0a0f';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(hx, hy, 5, 0, Math.PI * 2);
+            ctx.strokeStyle = highlightColor;
+            ctx.lineWidth = 2;
+            ctx.shadowColor = highlightColor;
+            ctx.shadowBlur = 8;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        drawHoverDot(hoverPoint.detection, '#00f6ff');
+        drawHoverDot(hoverPoint.threat, '#ff2a5f');
+
+        // Draw Tooltip Box
+        const tWidth = 140;
+        const tHeight = 85;
+        let tx = hx + 15;
+        let ty = padding.top + 10;
+        
+        // Flip tooltip if too close to right edge
+        if (tx + tWidth > w) {
+            tx = hx - tWidth - 15;
+        }
+
+        ctx.fillStyle = 'rgba(10, 10, 15, 0.85)';
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = 15;
+        if (ctx.roundRect) {
+            ctx.beginPath();
+            ctx.roundRect(tx, ty, tWidth, tHeight, 8);
+            ctx.fill();
+            // Outer semi-transparent border
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        } else {
+            ctx.fillRect(tx, ty, tWidth, tHeight);
+        }
+        ctx.shadowBlur = 0;
+
+        // Tooltip Content
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`Period: ${hoverPoint.label}`, tx + 12, ty + 24);
+        
+        // Divider
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fillRect(tx + 12, ty + 34, tWidth - 24, 1);
+
+        // Stats
+        ctx.fillStyle = '#00f6ff'; // Detection color
+        ctx.beginPath();
+        ctx.arc(tx + 18, ty + 50, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '11px sans-serif';
+        ctx.fillText('Growth:', tx + 28, ty + 54);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText(hoverPoint.detection, tx + 95, ty + 54);
+
+        ctx.fillStyle = '#ff2a5f'; // Threat color
+        ctx.beginPath();
+        ctx.arc(tx + 18, ty + 68, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '11px sans-serif';
+        ctx.fillText('Threats:', tx + 28, ty + 72);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText(hoverPoint.threat, tx + 95, ty + 72);
+    }
+
+    // 4. Legend Top Right
+    ctx.font = '11px sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('Detections', w - 172, 14);
+    
+    ctx.shadowColor = '#00f6ff';
+    ctx.shadowBlur = 8;
+    ctx.fillStyle = '#00f6ff';
+    ctx.fillRect(w - 200, 10, 10, 10);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillText('Spectral Growth', w - 180, 20);
 
-    ctx.fillStyle = '#f87171';
-    ctx.fillRect(w - 90, 8, 12, 3);
-    ctx.fillStyle = 'rgba(241, 245, 249, 0.7)';
-    ctx.fillText('Threats', w - 72, 14);
+    ctx.shadowColor = '#ff2a5f';
+    ctx.shadowBlur = 8;
+    ctx.fillStyle = '#ff2a5f';
+    ctx.fillRect(w - 90, 10, 10, 10);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillText('Threats', w - 70, 20);
 }
 
 function renderDistributionChart() {
@@ -1189,11 +1538,11 @@ let toastQueue = [];
 
 function initToastSystem() {
     setTimeout(() => {
-        showToast('warning', 'Vibration Anomaly', 'Unusual pattern detected in Zone A3 — Sensor PZS-A3-01');
+        showToast('warning', 'Vibration Anomaly', 'Unusual pattern detected in Zone 3 — Sensor PZS-3-01');
     }, 3000);
 
     setTimeout(() => {
-        showToast('critical', 'Pest Alert', 'Stem Borer activity confirmed in Zone B1. Confidence: 96.8%');
+        showToast('critical', 'Pest Alert', 'Stem Borer activity confirmed in Zone 5. Confidence: 96.8%');
     }, 8000);
 }
 
@@ -1253,7 +1602,7 @@ function simulateSensorEvent() {
     // 1. Generate signal mirroring the real bio-acoustics
     const states = ['healthy', 'healthy', 'healthy', 'locust', 'borer', 'aphid', 'whitefly'];
     const chosen = states[Math.floor(Math.random() * states.length)];
-    
+
     let freq, amp, dur, rate;
     if (chosen === 'healthy') {
         freq = 10 + Math.random() * 40;
@@ -1280,14 +1629,14 @@ function simulateSensorEvent() {
     // 2. Classify the signal using our Edge ML logic
     const prediction = predictPest(freq, amp, dur, rate);
     const zone = ZONES[Math.floor(Math.random() * ZONES.length)];
-    
+
     // 3. Update the Vibration Classifier Visuals in Detection Page
     const classifierName = document.getElementById('result-name');
     const classifierConf = document.getElementById('result-confidence');
     if (classifierName && classifierConf) {
         classifierName.textContent = prediction.type.name;
         classifierConf.textContent = `Confidence: ${prediction.confidence}%`;
-        
+
         // Change icon based on severity
         const iconDiv = document.querySelector('.result-icon');
         if (iconDiv) {
@@ -1300,11 +1649,11 @@ function simulateSensorEvent() {
         // Show Toast
         const severityType = prediction.type.severity === 'critical' ? 'critical' : prediction.type.severity === 'high' ? 'warning' : 'info';
         showToast(severityType, `${prediction.type.name} Detected`, `${zone.name} — ${freq.toFixed(1)}Hz signal. Risk: ${prediction.type.disease}`);
-        
+
         // Update Stats
         const detectionsToday = document.getElementById('detections-today');
         if (detectionsToday) detectionsToday.textContent = parseInt(detectionsToday.textContent) + 1;
-        
+
         const activeThreats = document.getElementById('active-threats');
         if (activeThreats) activeThreats.textContent = parseInt(activeThreats.textContent) + 1;
     }
@@ -1364,7 +1713,7 @@ const hindiTranslations = {
     "Analytics": "विश्लेषिकी",
     "System Online": "सिस्टम ऑनलाइन",
     "24 Sensors Active": "24 सेंसर सक्रिय",
-    
+
     // Stats
     "Active Sensors": "सक्रिय सेंसर",
     "Detections Today": "आज की पहचान",
@@ -1374,7 +1723,7 @@ const hindiTranslations = {
     "+5 vs yesterday": "+5 कल की तुलना में",
     "Requires attention": "ध्यान देने की आवश्यकता है",
     "+3% this week": "+3% इस सप्ताह",
-    
+
     // Cards & Sections
     "Live Vibration Feed": "लाइव कंपन फ़ीड",
     "Recent Detections": "हाल की पहचान",
@@ -1386,7 +1735,7 @@ const hindiTranslations = {
     "Recall": "रीकॉल",
     "F1 Score": "F1 स्कोर",
     "Latency": "विलंबता",
-    
+
     // Map & Detection
     "Grid": "ग्रिड",
     "List": "सूची",
@@ -1397,7 +1746,7 @@ const hindiTranslations = {
     "Detected": "पहचाना गया",
     "Detection History": "पहचान का इतिहास",
     "Species Classification": "प्रजाति वर्गीकरण",
-    
+
     // Filters & Tables
     "All Types": "सभी प्रकार",
     "Aphids": "एफिड्स",
@@ -1410,7 +1759,7 @@ const hindiTranslations = {
     "Confidence": "विश्वास",
     "Severity": "गंभीरता",
     "Status": "स्थिति",
-    
+
     // Analytics & Notifications
     "Detection Trends": "पहचान रुझान",
     "Pest Distribution": "कीट वितरण",
@@ -1426,7 +1775,7 @@ const hindiTranslations = {
     "Info": "जानकारी",
     "All Clear": "सब साफ",
     "All alerts marked as read": "सभी अलर्ट पढ़े गए के रूप में चिह्नित किए गए",
-    
+
     // Remedies & Advisory
     "Show Remedy": "उपाय देखें",
     "Farmer Advisory & Updates": "किसान सलाह और सरकारी योजनाएं",
@@ -1492,13 +1841,13 @@ function initProfilePanel() {
 function initLanguageToggle() {
     const btn = document.getElementById('language-btn');
     if (!btn) return;
-    
+
     btn.addEventListener('click', () => {
         isHindi = !isHindi;
         btn.querySelector('span').style.color = isHindi ? 'var(--accent-green)' : '';
-        
+
         translateDOM(document.body);
-        
+
         // Also translate placeholders
         const searchInput = document.getElementById('search-input');
         if (searchInput) {
@@ -1509,7 +1858,7 @@ function initLanguageToggle() {
                 searchInput.placeholder = originalTexts.get(searchInput) || "Search zones, alerts...";
             }
         }
-        
+
         showToast('info', isHindi ? 'भाषा बदल गई' : 'Language Changed', isHindi ? 'एप्लिकेशन की भाषा हिंदी में कर दी गई है।' : 'Application language set to English.');
     });
 }
