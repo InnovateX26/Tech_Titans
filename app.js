@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ['LiveUpdates', startLiveUpdates],
         ['LanguageToggle', initLanguageToggle],
         ['ProfilePanel', initProfilePanel],
+        ['ExtraInteractions', initExtraInteractions],
     ];
 
     inits.forEach(([name, fn]) => {
@@ -426,38 +427,44 @@ function renderDetectionList() {
     }).join('');
 }
 
+let liveDetectionRows = [
+    { pest: PEST_TYPES[2], confidence: '96.8', zone: ZONES[4], time: '12m ago', status: 'active' },
+    { pest: PEST_TYPES[1], confidence: '91.3', zone: ZONES[9], time: '28m ago', status: 'active' },
+    { pest: PEST_TYPES[0], confidence: '82.1', zone: ZONES[2], time: '1h ago', status: 'monitoring' },
+    { pest: PEST_TYPES[6], confidence: '88.7', zone: ZONES[11], time: '1h ago', status: 'monitoring' },
+    { pest: PEST_TYPES[3], confidence: '78.4', zone: ZONES[6], time: '2h ago', status: 'monitoring' },
+    { pest: PEST_TYPES[4], confidence: '85.2', zone: ZONES[8], time: '3h ago', status: 'resolved' },
+];
+
 function renderDetectionTable() {
     const tbody = document.getElementById('detection-table-body');
     if (!tbody) return;
 
-    const rows = [
-        { pest: PEST_TYPES[2], confidence: '96.8', zone: ZONES[4], time: '12m ago', status: 'active' },
-        { pest: PEST_TYPES[1], confidence: '91.3', zone: ZONES[9], time: '28m ago', status: 'active' },
-        { pest: PEST_TYPES[0], confidence: '82.1', zone: ZONES[2], time: '1h ago', status: 'monitoring' },
-        { pest: PEST_TYPES[6], confidence: '88.7', zone: ZONES[11], time: '1h ago', status: 'monitoring' },
-        { pest: PEST_TYPES[3], confidence: '78.4', zone: ZONES[6], time: '2h ago', status: 'monitoring' },
-        { pest: PEST_TYPES[4], confidence: '85.2', zone: ZONES[8], time: '3h ago', status: 'resolved' },
-        { pest: PEST_TYPES[5], confidence: '74.1', zone: ZONES[1], time: '4h ago', status: 'resolved' },
-        { pest: PEST_TYPES[7], confidence: '92.6', zone: ZONES[3], time: '5h ago', status: 'resolved' },
-        { pest: PEST_TYPES[0], confidence: '89.4', zone: ZONES[7], time: '6h ago', status: 'resolved' },
-        { pest: PEST_TYPES[2], confidence: '95.1', zone: ZONES[4], time: '8h ago', status: 'resolved' },
-        { pest: PEST_TYPES[1], confidence: '87.3', zone: ZONES[10], time: '10h ago', status: 'resolved' },
-        { pest: PEST_TYPES[3], confidence: '76.9', zone: ZONES[5], time: '12h ago', status: 'resolved' },
-    ];
-
-    tbody.innerHTML = rows.map(r => `
-        <tr>
-            <td>${r.time}</td>
-            <td>${r.zone.name}</td>
-            <td>
-                <span style="display:flex;align-items:center;gap:8px">
-                    <span>${r.pest.icon}</span>
-                    <span>${r.pest.name}</span>
+    tbody.innerHTML = liveDetectionRows.map((r, i) => `
+        <tr style="animation: fade-in 0.5s ease-out; border-bottom: 1px solid rgba(255,255,255,0.05); background: ${i === 0 && r.time === 'Just now' ? 'rgba(255,255,255,0.03)' : 'transparent'}">
+            <td style="color:var(--text-muted); font-family:monospace; font-size:0.85rem; padding: 12px 16px;">${r.time}</td>
+            <td style="font-weight:500; padding: 12px 16px;">${r.zone.name}</td>
+            <td style="padding: 12px 16px;">
+                <span style="display:inline-flex;align-items:center;gap:6px;">
+                    <span style="font-size:1.1rem;">${r.pest.icon}</span>
+                    <span style="letter-spacing:0.5px;">${r.pest.name}</span>
                 </span>
             </td>
-            <td><span class="confidence-value">${r.confidence}%</span></td>
-            <td><span class="severity-badge ${r.pest.severity}">${r.pest.severity}</span></td>
-            <td><span class="status-badge ${r.status}">${r.status}</span></td>
+            <td style="padding: 12px 16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="width: 50px; height: 6px; background: rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;">
+                        <div style="width: ${r.confidence}%; height: 100%; background: ${r.confidence > 90 ? '#f87171' : '#fbbf24'};"></div>
+                    </div>
+                    <span class="confidence-value" style="font-family:monospace;">${r.confidence}%</span>
+                </div>
+            </td>
+            <td style="padding: 12px 16px;"><span class="severity-badge ${r.pest.severity}">${r.pest.severity.toUpperCase()}</span></td>
+            <td style="padding: 12px 16px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background: ${r.status === 'active' ? '#ef4444' : r.status === 'monitoring' ? '#f59e0b' : '#10b981'};"></span>
+                    <span style="text-transform:capitalize; font-size:0.85rem; color:var(--text-muted);">${r.status}</span>
+                </div>
+            </td>
         </tr>
     `).join('');
 }
@@ -477,45 +484,52 @@ function renderSpectrogram() {
     canvas.height = h * dpr;
     ctx.scale(dpr, dpr);
 
-    // Dark background
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-    ctx.fillRect(0, 0, w, h);
-
-    // Generate spectrogram-like visual
     const cols = 120;
     const rows = 40;
     const cellW = w / cols;
     const cellH = h / rows;
 
+    // Dark background
+    ctx.fillStyle = '#0a0e17';
+    ctx.fillRect(0, 0, w, h);
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    ctx.lineWidth = 1;
+    for(let i=1; i<4; i++) {
+         ctx.beginPath(); ctx.moveTo(0, i*(h/4)); ctx.lineTo(w, i*(h/4)); ctx.stroke();
+    }
+
+    // Static Heatmap Array
     for (let x = 0; x < cols; x++) {
         for (let y = 0; y < rows; y++) {
             const freq = y / rows;
-            const time = x / cols;
+            const time = (x / cols); 
+            
             const intensity = Math.sin(freq * 12 + time * 8) * 0.3 +
                 Math.sin(freq * 5 - time * 3) * 0.2 +
                 Math.random() * 0.15;
 
             const band1 = Math.exp(-Math.pow(freq - 0.3, 2) / 0.01) * Math.sin(time * 15) * 0.5;
             const band2 = Math.exp(-Math.pow(freq - 0.6, 2) / 0.015) * Math.cos(time * 10) * 0.4;
-            const band3 = Math.exp(-Math.pow(freq - 0.8, 2) / 0.008) * Math.sin(time * 20) * 0.3;
+            const band3 = Math.exp(-Math.pow(freq - 0.8, 2) / 0.008) * Math.sin(time * 20) * 0.5;
 
             const val = Math.max(0, Math.min(1, intensity + band1 + band2 + band3));
+            
+            if (val < 0.1) continue;
 
             let r, g, b;
-            if (val < 0.25) {
-                r = 0; g = val * 4 * 100; b = 80 + val * 4 * 120;
-            } else if (val < 0.5) {
-                const t = (val - 0.25) * 4;
-                r = 0; g = 100 + t * 111; b = 200 - t * 120;
-            } else if (val < 0.75) {
-                const t = (val - 0.5) * 4;
-                r = t * 251; g = 211; b = 80 - t * 80;
+            if (val < 0.3) {
+                r = 0; g = val * 3 * 150; b = 100 + val * 3 * 155; // Dark cyan
+            } else if (val < 0.6) {
+                const t = (val - 0.3) * 3.33;
+                r = t * 150; g = 150 + t * 100; b = 255 - t * 200; // Bright cyan to yellow
             } else {
-                const t = (val - 0.75) * 4;
-                r = 248; g = 211 - t * 100; b = 0;
+                const t = (val - 0.6) * 2.5;
+                r = 150 + t * 105; g = 250 - t * 100; b = 50 - t * 50; // Yellow to Red
             }
 
-            ctx.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)}, ${0.3 + val * 0.7})`;
+            ctx.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)}, ${val})`;
             ctx.fillRect(x * cellW, y * cellH, cellW + 0.5, cellH + 0.5);
         }
     }
@@ -523,12 +537,16 @@ function renderSpectrogram() {
     // Axis labels
     ctx.fillStyle = 'rgba(148, 163, 184, 0.6)';
     ctx.font = '10px "JetBrains Mono"';
-    ctx.fillText('0 Hz', 4, h - 4);
-    ctx.fillText('5 kHz', 4, 12);
-    ctx.fillText('Time →', w - 50, h - 4);
+    ctx.textAlign = 'left';
+    ctx.fillText('0 Hz', 6, h - 8);
+    ctx.fillText('5 kHz', 6, 14);
+    ctx.textAlign = 'right';
+    ctx.fillText('Analysis Complete', w - 8, h - 8);
 }
 
 // ===== SPECIES CHART (Bar chart) =====
+let speciesChartHoverIndex = -1;
+
 function renderSpeciesChart() {
     const canvas = document.getElementById('species-canvas');
     if (!canvas) return;
@@ -541,79 +559,137 @@ function renderSpeciesChart() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = w * dpr;
     canvas.height = h * dpr;
-    ctx.scale(dpr, dpr);
 
-    const padding = { top: 20, right: 20, bottom: 50, left: 60 };
+    const padding = { top: 30, right: 20, bottom: 60, left: 60 };
 
-    const data = [
-        { name: 'Aphid', count: 42 },
-        { name: 'Whitefly', count: 35 },
-        { name: 'Borer', count: 28 },
-        { name: 'Thrips', count: 22 },
-        { name: 'Miner', count: 18 },
-        { name: 'Mealybug', count: 12 },
-        { name: 'Mite', count: 15 },
-        { name: 'Fruit Fly', count: 8 },
-    ];
+    const data = PEST_TYPES.map(pest => ({
+        pestObj: pest,
+        count: Math.floor(Math.random() * 50) + 10
+    })).sort((a,b)=>b.count - a.count).slice(0,6);
 
     const maxVal = Math.max(...data.map(d => d.count));
-    const barWidth = (w - padding.left - padding.right) / data.length * 0.6;
-    const gap = (w - padding.left - padding.right) / data.length * 0.4;
-    const chartH = h - padding.top - padding.bottom;
+    let hitboxes = [];
 
-    // Grid
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.06)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 5; i++) {
-        const y = padding.top + (chartH / 5) * i;
-        ctx.beginPath();
-        ctx.moveTo(padding.left, y);
-        ctx.lineTo(w - padding.right, y);
-        ctx.stroke();
+    function drawInteractive() {
+        ctx.save();
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, w, h);
+        hitboxes = [];
 
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.4)';
-        ctx.font = '10px "JetBrains Mono"';
-        ctx.textAlign = 'right';
-        ctx.fillText(Math.round(maxVal - (maxVal / 5) * i), padding.left - 8, y + 4);
+        const barWidth = (w - padding.left - padding.right) / data.length * 0.6;
+        const gap = (w - padding.left - padding.right) / data.length * 0.4;
+        const chartH = h - padding.top - padding.bottom;
+
+        // Grid
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.06)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 5; i++) {
+            const y = padding.top + (chartH / 5) * i;
+            ctx.beginPath();
+            ctx.moveTo(padding.left, y);
+            ctx.lineTo(w - padding.right, y);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(148, 163, 184, 0.4)';
+            ctx.font = '10px "JetBrains Mono"';
+            ctx.textAlign = 'right';
+            ctx.fillText(Math.round(maxVal - (maxVal / 5) * i), padding.left - 8, y + 4);
+        }
+
+        // Bars
+        const colors = ['#00f6ff', '#06b6d4', '#f87171', '#fbbf24', '#a78bfa', '#60a5fa'];
+
+        data.forEach((d, i) => {
+            const x = padding.left + i * (barWidth + gap) + gap / 2;
+            const barH = (d.count / maxVal) * chartH;
+            const y = padding.top + chartH - barH;
+
+            // Store hitbox
+            hitboxes.push({ x, y, width: barWidth, height: barH, data: d, color: colors[i] });
+
+            const isHovered = speciesChartHoverIndex === i;
+
+            const grad = ctx.createLinearGradient(0, y, 0, y + barH);
+            grad.addColorStop(0, colors[i]);
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(x, y, barWidth, barH, [4, 4, 0, 0]);
+            else ctx.fillRect(x, y, barWidth, barH);
+            ctx.fill();
+
+            // Labels
+            ctx.fillStyle = isHovered ? '#fff' : 'rgba(255,255,255,0.6)';
+            ctx.font = isHovered ? 'bold 11px sans-serif' : '11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(d.count, x + barWidth / 2, y - 6);
+            
+            const labelText = d.pestObj.name.split(' ')[0];
+            ctx.fillText(labelText, x + barWidth / 2, padding.top + chartH + 16);
+            ctx.font = '16px sans-serif';
+            ctx.fillText(d.pestObj.icon, x + barWidth / 2, padding.top + chartH + 34);
+        });
+        
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('Click any bar to view species details', padding.left, padding.top - 12);
+
+        ctx.restore();
     }
 
-    // Bars
-    const colors = [
-        '#34d399', '#06b6d4', '#f87171', '#fbbf24',
-        '#a78bfa', '#60a5fa', '#fb923c', '#e879f9'
-    ];
+    drawInteractive();
 
-    data.forEach((d, i) => {
-        const x = padding.left + i * (barWidth + gap) + gap / 2;
-        const barH = (d.count / maxVal) * chartH;
-        const y = padding.top + chartH - barH;
+    // Attach listeners ONCE
+    if (!canvas.dataset.interactiveBound) {
+        canvas.dataset.interactiveBound = "true";
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
 
-        // Bar gradient
-        const grad = ctx.createLinearGradient(0, y, 0, y + barH);
-        grad.addColorStop(0, colors[i]);
-        grad.addColorStop(1, colors[i] + '44');
+            let found = -1;
+            for(let i=0; i<hitboxes.length; i++) {
+                const b = hitboxes[i];
+                if (mouseX >= b.x && mouseX <= b.x + b.width && mouseY >= b.y && mouseY <= b.y + b.height) {
+                    found = i;
+                    break;
+                }
+            }
 
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        // Use roundRect with fallback
-        if (ctx.roundRect) {
-            ctx.roundRect(x, y, barWidth, barH, [4, 4, 0, 0]);
-        } else {
-            ctx.rect(x, y, barWidth, barH);
-        }
-        ctx.fill();
+            if (found !== speciesChartHoverIndex) {
+                speciesChartHoverIndex = found;
+                canvas.style.cursor = found !== -1 ? 'pointer' : 'default';
+                drawInteractive();
+            }
+        });
 
-        // Label
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.6)';
-        ctx.font = '10px Inter';
-        ctx.textAlign = 'center';
-        ctx.fillText(d.name, x + barWidth / 2, h - padding.bottom + 16);
+        canvas.addEventListener('click', () => {
+             if (speciesChartHoverIndex !== -1) {
+                 const hit = hitboxes[speciesChartHoverIndex];
+                 const pest = hit.data.pestObj;
+                 
+                 const panel = document.getElementById('species-details-panel');
+                 const iconEl = document.getElementById('species-details-icon');
+                 const nameEl = document.getElementById('species-details-name');
+                 const disEl = document.getElementById('species-details-disease');
+                 const sevEl = document.getElementById('species-details-severity');
 
-        // Value on top
-        ctx.fillStyle = 'rgba(241, 245, 249, 0.8)';
-        ctx.font = '11px "JetBrains Mono"';
-        ctx.fillText(d.count, x + barWidth / 2, y - 6);
-    });
+                 if(panel && iconEl && nameEl) {
+                     panel.style.display = 'flex';
+                     iconEl.textContent = pest.icon;
+                     nameEl.textContent = pest.name;
+                     disEl.innerHTML = `Known Disease: <span style="color:#fff;">${pest.disease}</span>`;
+                     sevEl.className = `severity-badge ${pest.severity}`;
+                     sevEl.textContent = pest.severity.toUpperCase();
+                     
+                     panel.style.boxShadow = 'none';
+                     panel.style.borderColor = 'rgba(255,255,255,0.1)';
+                 }
+             }
+        });
+    }
 }
 
 // ===== ZONE MAP =====
@@ -1656,6 +1732,19 @@ function simulateSensorEvent() {
 
         const activeThreats = document.getElementById('active-threats');
         if (activeThreats) activeThreats.textContent = parseInt(activeThreats.textContent) + 1;
+
+        // Add to Live Detection Rows and Re-render Table!
+        if (typeof liveDetectionRows !== 'undefined') {
+            liveDetectionRows.unshift({
+                pest: prediction.type,
+                confidence: prediction.confidence,
+                zone: zone,
+                time: 'Just now',
+                status: 'active'
+            });
+            if(liveDetectionRows.length > 8) liveDetectionRows.pop(); // Keep table concise
+            renderDetectionTable();
+        }
     }
 }
 
@@ -1893,5 +1982,84 @@ function translateDOM(element) {
                 translateDOM(node);
             }
         }
+    }
+}
+
+// ===== EXTRA INTERACTIONS =====
+function initExtraInteractions() {
+    // 1. Map View Toggles (Grid / List)
+    const mapContainer = document.getElementById('farm-map');
+    const viewBtns = document.querySelectorAll('.zone-map-card .card-actions .pill-btn');
+    if (viewBtns.length > 0 && mapContainer) {
+        viewBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                viewBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                if (btn.dataset.view === 'list') {
+                    const listHTML = ZONES.map(z => `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s;" onclick="showZoneDetails('${z.id}')" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            <div style="display:flex; gap:12px; align-items:center;">
+                                <div style="width:12px; height:12px; border-radius:50%; background:${z.status === 'critical'?'var(--accent-red)':z.status==='warning'?'var(--accent-amber)':'var(--accent-green)'}; box-shadow:0 0 8px ${z.status === 'critical'?'var(--accent-red)':z.status==='warning'?'var(--accent-amber)':'var(--accent-green)'}"></div>
+                                <span style="font-weight: 500; font-size: 1.1rem;">${z.name}</span>
+                            </div>
+                            <div style="display:flex; gap:20px; align-items:center;">
+                                <span style="color:var(--text-muted); font-size: 0.9rem;">${z.temp}°C • ${z.moisture}% Moisture</span>
+                                <span class="status-badge ${z.status}" style="min-width: 80px; text-align: center;">${z.status}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                    mapContainer.innerHTML = `<div style="max-height: 480px; overflow-y: auto; padding-right: 10px;">${listHTML}</div>`;
+                } else {
+                    mapContainer.innerHTML = '';
+                    initZoneMap(); // re-init svg
+                }
+            });
+        });
+    }
+
+    // 2. Detection History Filter
+    const historySelect = document.getElementById('history-filter');
+    if (historySelect) {
+        historySelect.addEventListener('change', (e) => {
+            showToast('info', 'Filter Applied', `History filtered for: ${e.target.options[e.target.selectedIndex].text}`);
+        });
+    }
+
+    // 3. Search Inputs
+    const searchInputs = document.querySelectorAll('input[type="search"], input[placeholder*="Search"]');
+    searchInputs.forEach(input => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                showToast('info', 'Search Initiated', `Searching global database for "${e.target.value}"...`);
+                e.target.value = '';
+            }
+        });
+    });
+
+    // 4. Logout / Session
+    const logoutBtns = document.querySelectorAll('.logout-btn');
+    logoutBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            showToast('warning', 'Session Ended', 'Logging out of CropGuard AI system...');
+            setTimeout(() => location.reload(), 1500);
+        });
+    });
+
+    // 5. Vibration Zone Select Options
+    const vibSelect = document.getElementById('vibration-zone-select');
+    if (vibSelect) {
+        // Clear old hardcoded options
+        vibSelect.innerHTML = '<option value="all">Global Scan</option>';
+        ZONES.forEach(z => {
+            const opt = document.createElement('option');
+            opt.value = z.id;
+            opt.textContent = z.name;
+            vibSelect.appendChild(opt);
+        });
+        
+        vibSelect.addEventListener('change', (e) => {
+            showToast('info', 'Sensor Target Updated', `Live telemetry feed switched to track: ${e.target.options[e.target.selectedIndex].text}`);
+        });
     }
 }
