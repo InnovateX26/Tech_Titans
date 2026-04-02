@@ -200,7 +200,7 @@
         .auth-heading h2 {
             font-size: 1.55rem; font-weight: 800;
             background: linear-gradient(135deg, #fff 30%, rgba(148,163,184,0.7) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+           /* -webkit-background-clip: text; -webkit-text-fill-color: transparent;*/
             margin-bottom: 5px;
         }
         .auth-heading p {
@@ -472,10 +472,6 @@
 
             <!-- ════ LOGIN PANEL ════ -->
             <div id="panel-login" class="auth-panel active">
-                <div class="auth-heading">
-                    <h2>Welcome Back 👨‍🌾</h2>
-                    <p>Sign in to access your CropGuard dashboard</p>
-                </div>
                 <form id="form-login" novalidate onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label>Email / Phone</label>
@@ -730,16 +726,24 @@ async function handleLogin(e) {
         
         setLoading('login-btn','login-spinner','login-btn-text', false);
         if (result.status === 'success') {
+            // Persist session
+            localStorage.setItem('farmer_token', result.token || 'demo-token');
+            localStorage.setItem('farmer_name', result.user?.name || email);
+            
             showToast('success','Login Successful ✅','Redirecting to your farm dashboard...');
-            showSuccess('Welcome Back!', 'Loading your CropGuard Dashboard...', 'dashboard');
+            showSuccess('Welcome Back!', 'Loading your CropGuard Dashboard...', 'index.html');
         } else {
             showToast('error', 'Login Failed', result.message || 'Invalid credentials.');
         }
     } catch (e) {
-        setLoading('login-btn','login-spinner','login-btn-text', false);
-        showToast('error', 'Connection Error', 'Backend server might be offline.');
-        // Fallback for demo
         console.warn("Backend error, demo fallback:", e);
+        showToast('warning', 'Backend Offline', 'Switching to Demo Mode for UI testing.');
+        setTimeout(() => {
+            setLoading('login-btn','login-spinner','login-btn-text', false);
+            localStorage.setItem('farmer_token', 'offline-demo-token');
+            localStorage.setItem('farmer_name', email.split('@')[0]);
+            showSuccess('Demo Mode Active!', 'Server is offline, but you can explore the UI.', 'index.html');
+        }, 800);
     }
 }
 
@@ -749,7 +753,7 @@ function demoLogin() {
     document.getElementById('login-pass').value = 'demo1234';
     showToast('info','Demo Mode','Logging in with demo account...', 3000);
     setTimeout(() => {
-        showSuccess('Demo Login!', 'Loading demo CropGuard Dashboard...', 'dashboard');
+        showSuccess('Demo Login!', 'Loading demo CropGuard Dashboard...', 'index.html');
     }, 900);
 }
 
@@ -781,14 +785,24 @@ async function handleRegister(e) {
         const result = await response.json();
         setLoading('reg-btn','reg-spinner','reg-btn-text', false);
         if (result.status === 'success') {
+            // Persist session
+            localStorage.setItem('farmer_token', result.token || 'reg-token');
+            localStorage.setItem('farmer_name', result.user?.name || name);
+            
             showToast('success', 'Account Created 🌾', `Welcome to CropGuard AI, ${name.split(' ')[0]}!`);
-            showSuccess('Registration Successful! 🎉', `Welcome ${name.split(' ')[0]}! Your account is ready.`, 'dashboard');
+            showSuccess('Registration Successful! 🎉', `Welcome ${name.split(' ')[0]}! Your account is ready.`, 'index.html');
         } else {
             showToast('error', 'Registration Error', result.message || 'Error occurred.');
         }
     } catch (e) {
-        setLoading('reg-btn','reg-spinner','reg-btn-text', false);
-        showToast('error', 'Connection Error', 'Backend server might be offline.');
+        console.warn("Backend registration error, demo fallback:", e);
+        showToast('warning', 'Backend Offline', 'Registration failed, but using Demo mode for UI testing.');
+        setTimeout(() => {
+            setLoading('reg-btn', 'reg-spinner', 'reg-btn-text', false);
+            localStorage.setItem('farmer_token', 'reg-demo-token');
+            localStorage.setItem('farmer_name', name.split(' ')[0]);
+            showSuccess('Demo Account Created! 🎉', `Welcome ${name.split(' ')[0]}! You can now explore the UI.`, 'index.html');
+        }, 800);
     }
 }
 
@@ -879,7 +893,7 @@ function showSuccess(title, msg, redirect) {
             document.getElementById('progress-bar').style.width = '100%';
         }, 50);
     });
-    setTimeout(() => window.location.href = 'http://127.0.0.1:5000/' + redirect, 1700);
+    setTimeout(() => window.location.href = redirect, 1700);
 }
 
 // ── Loading state ────────────────────────────────────────────────────
@@ -887,10 +901,13 @@ function setLoading(btnId, spinnerId, textId, loading) {
     const btn = document.getElementById(btnId);
     const sp  = document.getElementById(spinnerId);
     const tx  = document.getElementById(textId);
+    if (!btn || !sp || !tx) return;
+
+    if (!tx.dataset.orig) tx.dataset.orig = tx.textContent;
+
     btn.disabled = loading;
     sp.style.display = loading ? 'block' : 'none';
-    tx.textContent   = loading ? 'Please wait...' : tx.dataset.orig || tx.textContent;
-    if (!tx.dataset.orig) tx.dataset.orig = tx.textContent;
+    tx.textContent   = loading ? 'Please wait...' : tx.dataset.orig;
 }
 
 // ── Toast ─────────────────────────────────────────────────────────────
